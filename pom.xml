@@ -96,19 +96,24 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>me.zero.skyblock.main.SkyblockGame</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-antrun-plugin</artifactId>
+    <version>1.8</version>
+    <executions>
+        <execution>
+            <phase>install</phase>
+            <configuration>
+                <tasks>
+                    <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                          todir="${project.basedir}/plugins" />
+                </tasks>
+            </configuration>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            </execution>
+             </executions>
+           </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -131,6 +136,20 @@
                     </execution>
                 </executions>
             </plugin>
+        	<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-jar-plugin</artifactId>
+        		<version>2.4</version>
+        		<configuration>
+        			<archive>
+        				<manifest>
+        					<mainClass>
+        						
+        					</mainClass>
+        				</manifest>
+        			</archive>
+        		</configuration>
+        	</plugin>
         </plugins>
     </build>
 </project>

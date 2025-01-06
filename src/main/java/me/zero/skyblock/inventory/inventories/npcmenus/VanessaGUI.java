@@ -43,10 +43,12 @@ public class VanessaGUI extends GUI {
         }
 
         if (itemName.contains("The Rainmaker")) {
-                    player.sendMessage("§eYou can't stack up more rain than this!");
-                    player.sendMessage("§cYou need at least §65,000 coins §8to use The Rainmaker!");
-                    player.sendMessage("§eYou added a minute of rain! §a1 §eminutes of rain left!");
-                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+        	player.sendMessage("This feature is under development!");
+        	
+//                    player.sendMessage("§eYou can't stack up more rain than this!");
+ //                   player.sendMessage("§cYou need at least §65,000 coins §8to use The Rainmaker!");
+//                    player.sendMessage("§eYou added a minute of rain! §a<rmins> §eminutes until its sunny!");
+//                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
                     player.closeInventory();
                 }
                
@@ -54,7 +56,7 @@ public class VanessaGUI extends GUI {
 
     @Override
     public void onClose(InventoryCloseEvent event) {
-        // No action needed
+        
     }
 
     @Override
@@ -66,7 +68,8 @@ public class VanessaGUI extends GUI {
             0,
             "§7For a few coins, I'll conjure\n§7the rain!\n\n" +
             "§7One minute of rain: §65,000 coins\n\n" +
-            "§8The SkyBlock community spent a\n§8combined 0 coins on rain."
+            "§8The SkyBlock community spent a\n§8combined <tcoins> coins on rain.\n\n" +
+            "§c§lCOMING SOON"
         ));
 
         inventory.setItem(31, makeItemOther(Material.BARRIER, "§cClose", 1, 0, ""));

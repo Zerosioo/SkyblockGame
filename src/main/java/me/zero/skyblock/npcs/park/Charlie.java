@@ -3,8 +3,14 @@ package me.zero.skyblock.npcs.park;
 import me.zero.mortar.npc.MortarNPC;
 import me.zero.mortar.npc.NPCInteractionEvent;
 import me.zero.mortar.npc.NPCMeta;
+import me.zero.skyblock.inventory.GUI;
+import me.zero.skyblock.inventory.inventories.reward.CharlieGUI;
+import me.zero.skyblock.user.*;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import java.util.Arrays;
+
 public class Charlie extends MortarNPC {
     public Charlie() {
         super(new NPCMeta() {
@@ -60,7 +66,16 @@ public class Charlie extends MortarNPC {
     }
     @Override
     public void onInteract(NPCInteractionEvent event) {
+    	
+    	Player player = event.getPlayer();
+    	User user = User.getUser(player.getUniqueId());
+    	
+    	if (user.booleanHandler.getBoolean("isInSkyblock") == false) {
+    // Do something if "isInSkyblock" is explicitly false
+    player.sendMessage("Player is not in Skyblock. Initializing... §c§lTHIS IS JUST A TEST");
+    user.booleanHandler.setBoolean("isInSkyblock", true); 
+        }
 
-     
+     new CharlieGUI().open(player);
     }
 }

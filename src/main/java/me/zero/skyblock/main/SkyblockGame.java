@@ -149,7 +149,6 @@ public class SkyblockGame extends JavaPlugin {
 
     public void registerEvents() {
         // Register all event listeners
-        
        getServer().getPluginManager().registerEvents(new InventoryClick(), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerChatListener(), this);
@@ -173,6 +172,7 @@ public void loadNPCs() {
         npcRegistry.register(new Salesman(), false);
         npcRegistry.register(new Curator(), false);
         npcRegistry.register(new MadameEleanorQGoldsworthIII(), false);
+        npcRegistry.register(new LumberJack(), false);
         
         // Removed (set location to 0 0 0 alright?)
         npcRegistry.register(new Dante(), false);

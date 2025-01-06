@@ -27,26 +27,23 @@ public class User
     public PlayerRank rank;
     private int skyblocklevel;
     private int skyblockxp;
-    private List<String> talkedNPCs;
-    private List<String> talkedVillagers;
-    private static long totalVanessaCoinsSpent = 0;
-
+    public final BooleanHandler booleanHandler = new BooleanHandler();
+    
+    
     private User(UUID uuid)
     {
         this.uuid = uuid;
         this.coins = 0;
         this.bankCoins = 0;
-        this.skyblocklevel = 1;
+        this.skyblocklevel = 0;
         this.skyblockxp = 0;
         this.rank = PlayerRank.DEFAULT;
-        this.talkedNPCs = new CopyOnWriteArrayList<String>();
-        this.talkedVillagers = new CopyOnWriteArrayList<String>();
-        this.totalVanessaCoinsSpent = 0;
 
         if (!USER_FOLDER.exists()) USER_FOLDER.mkdirs();
         String path = uuid.toString() + ".yml";
         File configFile = new File(USER_FOLDER, path);
         boolean save = false;
+        
         try
         {
             if (!configFile.exists())
@@ -74,14 +71,13 @@ public class User
         this.rank = PlayerRank.valueOf(this.config.getString("rank"));
         this.skyblocklevel = config.getInt("skyblocklevel");
         this.skyblockxp = config.getInt("skyblockxp");
-        this.totalVanessaCoinsSpent = config.getLong("totalVanessaCoinsSpent");
-        if (this.config.contains("talked_npcs")) {
-            this.talkedNPCs = (List<String>) this.config.getList("talked_npcs");
-        }
-
-        if (this.config.contains("talked_villagers")) {
-            this.talkedVillagers = (List<String>) this.config.getList("talked_villagers");
-        }
+        
+        if (this.config.contains("booleanStates")) {
+    Map<String, Boolean> savedBooleans = (Map<String, Boolean>) this.config.get("booleanStates");
+    if (savedBooleans != null) {
+        savedBooleans.forEach(booleanHandler::setBoolean);
+    }
+}
 
 
     }
@@ -94,9 +90,8 @@ public class User
         config.set("skyblocklevel", skyblocklevel);
         config.set("skyblockxp", skyblockxp);
         this.config.set("rank", this.rank.toString());
-        this.config.set("talked_npcs", this.talkedNPCs);
-        this.config.set("talked_villagers", this.talkedVillagers);
-        config.set("totalVanessaCoinsSpent", totalVanessaCoinsSpent);
+        
+        this.config.set("booleanStates", booleanHandler.getAllBooleans());
 
 
         config.save();
@@ -134,13 +129,6 @@ public class User
         this.coins = coins;
     }
     
-    public static void addVanessaCoinsSpent(long amount) {
-    totalVanessaCoinsSpent += amount;
-   }
-   
-   public static long getTotalVanessaCoinsSpent()   {
-    return totalVanessaCoinsSpent;
-  }
 
     public void setRank(PlayerRank rank) {
         this.rank = rank;
@@ -195,7 +183,7 @@ public class User
     }
 
 
-    public String getskyblocklevelPrefix() {
+    public String getskyblocklevelColour() {
         if (this.skyblocklevel < 40) return "§7";
         if (this.skyblocklevel < 80) return "§f";
         if (this.skyblocklevel < 120) return "§e";
@@ -214,7 +202,7 @@ public class User
 
     public String LevelPrefix() {
 
-            return "§8[" + getskyblocklevelPrefix() + getSkyblockLevel() + "§8]";
+            return "§8[" + getskyblocklevelColour() + getSkyblockLevel() + "§8]";
 
     }
 
@@ -227,35 +215,11 @@ public class User
     }
 
     public int getSkyblockLevel() {
-
             return this.skyblocklevel;
-
     }
 
     public void setSkyblockLevel() {
-
             this.skyblocklevel = skyblocklevel;
-
-    }
-
-    public synchronized void addTalkedNPC(Collection<? extends String> name) {
-        if (!this.talkedNPCs.contains(name)) {
-            this.talkedNPCs.addAll(name);
-        }
-    }
-
-    public synchronized void addTalkedVillager(String name) {
-        if (!this.talkedVillagers.contains(name)) {
-            this.talkedVillagers.add(name);
-        }
-    }
-
-    public List<String> getTalkedVillagers() {
-        return this.talkedVillagers;
-    }
-
-    public List<String> getTalkedNPCs() {
-        return this.talkedNPCs;
     }
 
     public UUID getUuid() {

@@ -11,7 +11,7 @@ import me.zero.skyblock.npcs.removed.*;
 import me.zero.skyblock.npcs.park.*;
 import me.zero.skyblock.npcs.end.*;
 import me.zero.skyblock.npcs.custom.*;
-import me.zero.skyblock.user.User;
+import me.zero.skyblock.user.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
@@ -26,6 +26,8 @@ public class SkyblockGame extends JavaPlugin {
     @Getter
     private static SkyblockGame plugin;
     private static SkyblockGame instance;
+    public Config config;
+    public Repeater repeater;
 
 
     @Getter
@@ -48,6 +50,8 @@ public class SkyblockGame extends JavaPlugin {
                 world.setAutoSave(false);
             }
         });
+        
+        repeater = new Repeater();
 
         // Command registration
         getLogger().info(ChatColor.GREEN + "Registering commands...");
@@ -55,8 +59,10 @@ public class SkyblockGame extends JavaPlugin {
         getLogger().info(ChatColor.GREEN + "Registered commands!");
 
         // Config
-        loadConfig();
         getLogger().info(ChatColor.GREEN + "Loading Configuration");
+        
+        config = new Config("config.yml");
+        loadConfig();
 
         // Event registration
         getLogger().info(ChatColor.GREEN + "Registering events...");
@@ -88,6 +94,7 @@ public class SkyblockGame extends JavaPlugin {
 
         npcRegistry = null;
         mortar = null;
+        repeater.stop();
 
 
         getLogger().info("Saving user data...");

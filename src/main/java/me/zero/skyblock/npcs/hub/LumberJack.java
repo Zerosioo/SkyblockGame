@@ -5,6 +5,7 @@ import me.zero.mortar.npc.NPCInteractionEvent;
 import me.zero.mortar.npc.NPCMeta;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 
 import me.zero.skyblock.inventory.inventories.reward.LumberJackGUI;
 import me.zero.skyblock.user.*;
@@ -77,14 +78,29 @@ public class LumberJack extends MortarNPC {
         
         if (user.booleanHandler.getBoolean("lumber_jack_first_interaction") == false) {
             
+            user.booleanHandler.setBoolean("timber_quest_collect_logs", true);
+            user.booleanHandler.setBoolean("lumber_jack_first_interaction", true);
+            
     speak(player, Arrays.asList(
                 "§fTimber!",
                 "§fMy woodcutting assistant has fallen quite ill! Do you think you could take over for him?",
                 "§fI just need you to chop down some Logs. If you do, I'll even give you his old axe as a reward!"
         ));
         
-    SUtil.delay(() ->user.booleanHandler.setBoolean("lumber_jack_first_interaction", true) , 90);
-    SUtil.delay(() ->user.booleanHandler.setBoolean("timber_quest_collect_logs", true) , 90);
+    SUtil.delay(() -> {
+    player.sendMessage("");
+    player.sendMessage(" §6§lOBJECTIVE COMPLETE");
+    player.sendMessage(" §fTalk to the Lumber Jack");
+    player.sendMessage("");
+    player.sendMessage("  §a§lREWARD");
+    player.sendMessage("   §8+§b5 SkyBlock XP");
+    player.sendMessage(" ");
+    player.sendMessage(" §6§lNEW OBJECTIVE");
+    player.sendMessage(" §fCollect logs");
+    player.sendMessage("");
+    user.addSkyblockXP(5);
+    player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 0);
+}, 90);
     return;
         }
         
@@ -103,28 +119,39 @@ public class LumberJack extends MortarNPC {
             return;
         }
         
-        
-    if (user.booleanHandler.getBoolean("sweet_axe_claimed") == true) {
-            
-            speak(player, Arrays.asList("§fYou've got the knack for wood. Could you get some Birch Planks from §aBirch Park§f?", "§fMy associate will be there waiting for you. He will reward you in §6Coins §fif you're up to the task!"));
-            
-            SUtil.delay(() ->user.booleanHandler.setBoolean("travel_to_the_park", true) , 60);
-            return;
-            
-        }
+       
         
         ItemStack oakLog = new ItemStack(Material.LOG, 10, (short) 0);
         
-    if (player.getInventory().containsAtLeast(oakLog, 10)) {
+    if (player.getInventory().containsAtLeast(oakLog, 10) && user.booleanHandler.getBoolean("timber_quest_collect_logs") == false) {
         player.getInventory().removeItem(oakLog);
-        user.booleanHandler.setBoolean("timber_quest_collect_logs", false);
+        
         user.booleanHandler.setBoolean("timber_quest_completed", true); 
-
-        speak(player, "§fThank you! Take this §aSweet Axe§f, it's so sweet that it drops apples from logs sometimes!");
-        SUtil.delay(() -> new LumberJackGUI().open(player), 30);
+        speak(player, Arrays.asList("§fThank you! Take this §aSweet Axe§f, it's so sweet that it drops apples from logs sometimes!", "§fYou've got the knack for wood. Could you get some Birch Planks from §aBirch Park§f?", "§fMy associate will be there waiting for you. He will reward you in §6Coins §fif you're up to the task!"));
+        
+        SUtil.delay(() -> {
+    player.sendMessage("");
+    player.sendMessage(" §6§lOBJECTIVE COMPLETE");
+    player.sendMessage(" §fCollect logs");
+    player.sendMessage("");
+    player.sendMessage("  §a§lREWARD");
+    player.sendMessage("  §aSweet Axe");
+    player.sendMessage(" ");
+    user.addSkyblockXP(5);
+    player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 0);
+}, 90);
+        
+        SUtil.delay(() -> new LumberJackGUI().open(player), 90);
+        
      } else if (user.booleanHandler.getBoolean("timber_quest_collect_logs") == true) {
         speak(player, "§fBring me some Logs. You can chop them down in this §bForest§f!");
         return;
       }
+      
+      if (user.booleanHandler.getBoolean("timber_quest_completed") == true) {
+        new LumberJackGUI().open(player);
+        return;
+      }
+      
     }
 }

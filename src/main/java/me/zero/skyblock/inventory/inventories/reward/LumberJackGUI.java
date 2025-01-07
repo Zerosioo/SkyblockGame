@@ -33,10 +33,15 @@ public class LumberJackGUI extends GUI {
            	
            	player.closeInventory();
            	player.getInventory().addItem();
-           	player.sendMessage("§aYou claimed a §fSweet Axe§a!");
+           	player.sendMessage("§aYou claimed a Sweet Axe!");
+           	player.sendMessage("");
+           	player.sendMessage(" §6§lNEW OBJECTIVE");
+    player.sendMessage(" §fTravel to the park behind the woods");
+    player.sendMessage("");
            	player.getInventory().addItem(makeItemOther(Material.IRON_AXE, "§aSweet Axe", 1, 0, "§7Damage: §c+25\n\n§a20% §7chance of dropping an Apple\n§7when chopping logs.\n\n§8This item can be reforged!\n§a§lUNCOMMON"));
         User user = User.getUser(player.getUniqueId());
         user.booleanHandler.setBoolean("sweet_axe_claimed", true); 
+        user.booleanHandler.setBoolean("travel_to_the_park", true);
         
            }
         

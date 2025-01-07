@@ -6,12 +6,14 @@ import me.zero.skyblock.ranks.PlayerRank;
 import me.zero.mortar.npc.MortarNPC;
 import me.zero.mortar.utils.PacketUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.scoreboard.*;
 import org.bukkit.event.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 
 public class PlayerListener implements Listener {
@@ -117,6 +119,20 @@ public class PlayerListener implements Listener {
 
             player.setDisplayName(updatedDisplayName);
             player.setPlayerListName(updatedPlayerListName);
+            ItemStack oakLog = new ItemStack(Material.LOG, 10, (short) 0);
+        
+    if (player.getInventory().containsAtLeast(oakLog, 10) && user.booleanHandler.getBoolean("timber_quest_collect_logs") == true) {
+    	
+    	user.booleanHandler.setBoolean("timber_quest_collect_logs", false);
+    	player.sendMessage("");
+    player.sendMessage(" §6§lOBJECTIVE COMPLETE");
+    player.sendMessage(" §fCollect logs");;
+    player.sendMessage(" ");
+    player.sendMessage(" §6§lNEW OBJECTIVE");
+    player.sendMessage(" §fTalk to the Lumberjack");
+    player.sendMessage("");
+    	
+    }
 
             // Update scoreboard if necessary
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();

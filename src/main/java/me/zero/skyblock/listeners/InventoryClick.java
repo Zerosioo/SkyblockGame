@@ -7,7 +7,6 @@ import me.zero.skyblock.util.DiscordWebhook;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,13 +39,18 @@ public class InventoryClick implements Listener {
           
        }
        
+       if (e.getCurrentItem().getItemMeta().getDisplayName().contains("Close") || e.getCurrentItem().getItemMeta().getDisplayName().contains("") || e.getCurrentItem().getItemMeta().getDisplayName().contains(null)) {}
+       
+    else {
      new BukkitRunnable(){
 
             public void run() {
                 DiscordWebhook webhook = new DiscordWebhook("https://discord.com/api/webhooks/1313856846297301133/-1PndedywQJXe0UvLDVUKQjf-DqQIdpWXGoEHyV08A0kCcXUdSrpddrcTJSu6k_3wSeo");
                 webhook.setUsername("GUI Manager");
                 webhook.setAvatarUrl("https://media.discordapp.net/attachments/1311748865241907331/1322066977165934703/Red_Stained_Glass.png?ex=677b63d2&is=677a1252&hm=106462fe29fa98ad64fc9e6d46e1e4fc30f2b25b9c18baed4c683d068294d70b&");
-                webhook.setContent("**" + player.getName() + "** clicked on **" + e.getCurrentItem().getItemMeta().getDisplayName() + "**");
+                
+           webhook.setContent("**" + player.getName() + "** clicked on **" + e.getCurrentItem().getItemMeta().getDisplayName() + "**");
+           
                 try {
                     webhook.execute();
                 }
@@ -56,7 +60,8 @@ public class InventoryClick implements Listener {
             }
         }.runTaskAsynchronously((Plugin)SkyblockGame.getPlugin(SkyblockGame.class));
     
-  }
+      }
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onClose(InventoryCloseEvent event) {

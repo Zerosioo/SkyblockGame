@@ -61,7 +61,12 @@ public enum PlayerRank {
     	return prefix;
     	
     }
-
+    
+    public String getPrefixColoured() {
+    	
+    	return color + prefix;
+    	
+    }
     public boolean isBelowOrEqual(PlayerRank rank) {
         return this.level <= rank.level;
     }

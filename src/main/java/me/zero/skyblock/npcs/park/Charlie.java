@@ -70,6 +70,7 @@ public class Charlie extends MortarNPC {
     	Player player = event.getPlayer();
     	User user = User.getUser(player.getUniqueId());
     	
+    	
     	if (user.booleanHandler.getBoolean("isInSkyblock") == false) {
     // Do something if "isInSkyblock" is explicitly false
     player.sendMessage("Player is not in Skyblock. Initializing... §c§lTHIS IS JUST A TEST");
@@ -78,4 +79,6 @@ public class Charlie extends MortarNPC {
 
      new CharlieGUI().open(player);
     }
+    
+   
 }

@@ -1,7 +1,10 @@
 package me.zero.skyblock.main;
 
 import me.zero.skyblock.commands.*;
+import me.zero.skyblock.commands.abstraction.SkyBlockCommand;
 import me.zero.skyblock.listeners.*;
+import me.zero.skyblock.location.LocationListener;
+import me.zero.skyblock.location.LocationManager;
 import me.zero.skyblock.ranks.*;
 import me.zero.mortar.MortarLibrary;
 import me.zero.mortar.npc.*;
@@ -12,36 +15,48 @@ import me.zero.skyblock.npcs.park.*;
 import me.zero.skyblock.npcs.end.*;
 import me.zero.skyblock.npcs.custom.*;
 import me.zero.skyblock.user.*;
+import me.zero.skyblock.util.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.reflections.Reflections;
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.Listener;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 
 import lombok.Getter;
+import org.reflections.Reflections;
+import java.lang.reflect.InvocationTargetException;
 
 import java.util.List;
+import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SkyblockGame extends JavaPlugin {
     @Getter
     private static SkyblockGame plugin;
     private static SkyblockGame instance;
     public Config config;
-    public Repeater repeater;
-
 
     @Getter
     private static NPCRegistry npcRegistry;
      @Getter
     private static MortarLibrary mortar;
+    private LocationManager locationManager;
 
 
     @Override
     public void onEnable() {
-
+            
+            
             plugin = this;
             instance = this;
                 mortar = MortarLibrary.link(this);
+                locationManager = new LocationManager();
         npcRegistry = mortar.getNpcRegistry();
 
         // Disable auto-save for protected worlds
@@ -51,32 +66,32 @@ public class SkyblockGame extends JavaPlugin {
             }
         });
         
-        repeater = new Repeater();
 
         // Command registration
-        getLogger().info(ChatColor.GREEN + "Registering commands...");
+        SkyBlockLogger.info(ChatColor.GREEN + "Registering commands...");
         initializeCommands();
-        getLogger().info(ChatColor.GREEN + "Registered commands!");
+        registerCommands();
+        SkyBlockLogger.info(ChatColor.GREEN + "Registered commands!");
 
         // Config
-        getLogger().info(ChatColor.GREEN + "Loading Configuration");
+        SkyBlockLogger.info(ChatColor.GREEN + "Loading Configuration");
         
         config = new Config("config.yml");
         loadConfig();
 
         // Event registration
-        getLogger().info(ChatColor.GREEN + "Registering events...");
+        SkyBlockLogger.info(ChatColor.GREEN + "Registering events...");
         registerEvents();
-        getLogger().info(ChatColor.GREEN + "Registered events!");
+        SkyBlockLogger.info(ChatColor.GREEN + "Registered events!");
 
         // NPCs
-        getLogger().info(ChatColor.GREEN + "Loading NPCs...");
+        SkyBlockLogger.info(ChatColor.GREEN + "Loading NPCs...");
         loadNPCs();
 
         // Game rule setup
-        getLogger().info(ChatColor.GREEN + "Initializing Gamerules...");
+        SkyBlockLogger.info(ChatColor.GREEN  + "Initializing Gamerules...");
         initializeGameRules();
-        getLogger().info(ChatColor.GREEN + "Initialized Gamerules!");
+        SkyBlockLogger.info(ChatColor.GREEN + "Initialized Gamerules!");
 
         // Launch message
         getLogger().info(ChatColor.GREEN + "------------------------------------");
@@ -94,10 +109,9 @@ public class SkyblockGame extends JavaPlugin {
 
         npcRegistry = null;
         mortar = null;
-        repeater.stop();
 
 
-        getLogger().info("Saving user data...");
+        SkyBlockLogger.info("Saving user data...");
 
         for (User user : User.getCachedUsers())
             user.save();
@@ -131,7 +145,6 @@ public class SkyblockGame extends JavaPlugin {
         getCommand("fly").setExecutor(new FlyCommand(this));
         getCommand("debug").setExecutor(new DebugCommand(this));
         getCommand("ping").setExecutor(new PingCommand(this));
-        getCommand("announce").setExecutor(new AnnouncementCommand(this));
         getCommand("boop").setExecutor(new BoopCommand(this));
         getCommand("op").setExecutor(new OpCommand(this));
         getCommand("gm").setExecutor(new Gamemode(this));
@@ -163,6 +176,7 @@ public class SkyblockGame extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeaveEvent(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerChat(), this);
+        Bukkit.getPluginManager().registerEvents(new LocationListener(locationManager), this);
     }
 
     public void loadConfig() {
@@ -181,7 +195,7 @@ public void loadNPCs() {
         npcRegistry.register(new MadameEleanorQGoldsworthIII(), false);
         npcRegistry.register(new LumberJack(), false);
         
-        // Removed (set location to 0 0 0 alright?)
+        // Removed (set location to 0 0 0, alright?)
         npcRegistry.register(new Dante(), false);
         
         // The Park
@@ -207,6 +221,23 @@ public void loadNPCs() {
     
     public static SkyblockGame getInstance() {
         return instance;
+    }
+    
+    private void registerCommands(){
+        SkyBlockLogger.info("Registering commands...");
+        int registered = 0;
+        for (Class< ? extends SkyBlockCommand> clazz : new Reflections("me.zero.skyblock.commands")
+                .getSubTypesOf(SkyBlockCommand.class)){
+            try {
+                SkyBlockCommand skyBlockCommand = clazz.getDeclaredConstructor().newInstance();
+                skyBlockCommand.register();
+                registered++;
+            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        SkyBlockLogger.info("Successfully registered " + registered + " commands.");
     }
 
 }

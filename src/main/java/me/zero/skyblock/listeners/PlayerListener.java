@@ -23,6 +23,7 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
         User user = User.getUser(player.getUniqueId());
         user.load();
+        user.booleanHandler.setBoolean("NONE", true); // to prevent none reg discovery message.
 
         // Initial rank and level prefix setup
         PlayerRank rank = user.rank;

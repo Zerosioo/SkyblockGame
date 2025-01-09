@@ -2,9 +2,6 @@ package me.zero.skyblock.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.zero.skyblock.main.SkyblockGame;
@@ -13,22 +10,19 @@ import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 
-public class RebootCommand implements CommandExecutor {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
+import me.zero.skyblock.main.SkyblockGame;
 
-    private final SkyblockGame plugin;
-
-    public RebootCommand(SkyblockGame plugin) {
-        this.plugin = plugin;
-    }
+@CommandParameters(
+description = "restart a server", 
+usages = "§cUsage: /reboot",
+rank = PlayerRank.ADMIN)
+public class RebootCommand extends SkyBlockCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!sender.hasPermission("SkyblockGame.ADMIN")) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-            return true;
-        }
-
-        sender.sendMessage(ChatColor.GREEN + "Server reboot scheduled in 60 seconds.");
+    public void execute(Player player, String[] args)     {
+        player.sendMessage(ChatColor.GREEN + "Server reboot scheduled in 60 seconds.");
 
         new BukkitRunnable() {
             int countdown = 60;
@@ -56,11 +50,11 @@ public class RebootCommand implements CommandExecutor {
 
                 countdown--;
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(SkyblockGame.getPlugin(SkyblockGame.class), 0L, 20L);
 
-        return true;
+        return;
     }
-
+    
     private void sendTitle(Player player, String title, String subtitle) {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         IChatBaseComponent chatTitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + title + "\"}");

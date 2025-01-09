@@ -2,75 +2,42 @@ package me.zero.skyblock.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import me.zero.skyblock.main.SkyblockGame; 
 
-public class OpCommand implements CommandExecutor {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
 
-    private final SkyblockGame plugin;
-
-    public OpCommand(SkyblockGame plugin) {
-        this.plugin = plugin;
-    }
+@CommandParameters(
+description = "Op a player", 
+usages = "§cUsage: /op <player>",
+rank = PlayerRank.COOWNER)
+public class OpCommand extends SkyBlockCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-      
+    public void execute(Player player, String[] args)     {
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Usage: /op <player>");
-            return false;
+            player.sendMessage(ChatColor.RED + "Usage: /op <player>");
+            return;
         }
         
-        if (!sender.hasPermission("SkyblockGame.OWNER")) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-            return true;
-        }
-
         Player target = Bukkit.getPlayer(args[0]);
 
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Player not found or is not online.");
-            return true;
-        }
-
-        if (target.isOp()) {
-            sender.sendMessage(ChatColor.YELLOW + target.getName() + " is already an operator.");
-            return true;
-        }
-
-        target.setOp(true);
-
-        target.sendMessage(ChatColor.GREEN + "You have been promoted to operator by " + sender.getName() + ".");
-        sender.sendMessage(ChatColor.GREEN + "You have promoted " + target.getName() + " to operator.");
-
-        return true;
-    }
-
-    public void execute(ConsoleCommandSender sender, String[] args) {
-      
-        if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Usage: /op <player>");
-            return;
-        }
-
-        Player target = Bukkit.getPlayer(args[0]);
-
-        if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Player not found or is not online.");
+            player.sendMessage(ChatColor.RED + "Player not found or is not online.");
             return;
         }
 
         if (target.isOp()) {
-            sender.sendMessage(ChatColor.YELLOW + target.getName() + " is already an operator.");
+            player.sendMessage(ChatColor.YELLOW + target.getName() + " is already an operator.");
             return;
         }
 
         target.setOp(true);
-        target.sendMessage(ChatColor.GREEN + "You have been promoted to operator by console.");
-        sender.sendMessage(ChatColor.GREEN + "You have promoted " + target.getName() + " to operator.");
+
+        target.sendMessage(ChatColor.GREEN + "You have been promoted to operator by " + player.getName() + ".");
+        player.sendMessage(ChatColor.GREEN + "You have promoted " + target.getName() + " to operator.");
+
+        return;
     }
+    
 }

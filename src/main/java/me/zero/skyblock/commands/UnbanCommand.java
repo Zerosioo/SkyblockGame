@@ -1,21 +1,28 @@
 package me.zero.skyblock.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import me.zero.skyblock.main.SkyblockGame;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
-public class Unban implements CommandExecutor {
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender.hasPermission("SkyblockGame.MOD")) {
-			if (args.length >= 1) {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
+
+@CommandParameters(
+description = "Unban a player", 
+usages = "§cUsage: /unban <name>",
+rank = PlayerRank.MOD)
+public class UnbanCommand extends SkyBlockCommand {
+
+    @Override
+    public void execute(Player player, String[] args)     {
+        if (args.length >= 1) {
 				Player target = Bukkit.getPlayerExact(args[0]);
 				File playerfile = new File((SkyblockGame.getPlugin(SkyblockGame.class)).getDataFolder() + File.separator, "punishments.yml");
 				FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerfile);
@@ -36,8 +43,8 @@ public class Unban implements CommandExecutor {
 				}
 
 				if (uuid == null) {
-					sender.sendMessage("§cPlayer does not exist.");
-					return false;
+					player.sendMessage("§cPlayer does not exist.");
+					return;
 				}
 
 				if (playerData.contains(uuid)) {
@@ -49,24 +56,19 @@ public class Unban implements CommandExecutor {
 							playerData.set(uuid + ".ban.id", "");
 							playerData.save(playerfile);
 							if (target != null) {
-								sender.sendMessage("§aUnbanned " + Bukkit.getPlayer(args[0]).getName());
+								player.sendMessage("§aUnbanned " + Bukkit.getPlayer(args[0]).getName());
 							} else {
-								sender.sendMessage("§aUnbanned " + args[0]);
+								player.sendMessage("§aUnbanned " + args[0]);
 							}
 						} catch (IOException var11) {
 							var11.printStackTrace();
 						}
 					} else {
-						sender.sendMessage("§cPlayer is not banned!");
+						player.sendMessage("§cPlayer is not banned!");
 					}
 				}
 			} else {
-				sender.sendMessage("§cInvalid syntax. Correct: /unban <name>");
+				player.sendMessage("§cInvalid syntax. Correct: /unban <name>");
 			}
-		} else {
-			sender.sendMessage("§cYou do not have permission to execute this command!");
-		}
-
-		return false;
-	}
+    }
 }

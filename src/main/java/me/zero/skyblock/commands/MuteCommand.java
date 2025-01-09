@@ -1,5 +1,9 @@
 package me.zero.skyblock.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import me.zero.skyblock.main.SkyblockGame;
 import java.io.File;
 import java.io.IOException;
@@ -11,21 +15,24 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.RandomStringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import me.zero.skyblock.*;
 
-public class Mute implements CommandExecutor {
-	private static final Pattern periodPattern = Pattern.compile("([0-9]+)([hdwmy])");
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender.hasPermission("SkyblockGame.JRHELPER")) {
-			if (args.length >= 3) {
+@CommandParameters(
+description = "Mute Someons", 
+usages = "§cUsage: /mute <name> <length> <reason>",
+rank = PlayerRank.HELPER)
+public class MuteCommand extends SkyBlockCommand {
+	private static final Pattern
+	
+	periodPattern = Pattern.compile("([0-9]+)([hdwmy])");
+
+    @Override
+    public void execute(Player player, String[] args)     {
+       if (args.length >= 3) {
 				String reason = "";
 
 				for(int i = 2; i < args.length; ++i) {
@@ -53,15 +60,15 @@ public class Mute implements CommandExecutor {
 				}
 
 				if (uuid == null) {
-					sender.sendMessage("§cPlayer does not exist.");
-					return false;
+					player.sendMessage("§cPlayer does not exist.");
+					return;
 				}
 
 				long unixTime = System.currentTimeMillis() / 1000L;
 				long muteTime = parsePeriod(args[1]) / 1000L - 1L;
 				if (muteTime < 59L) {
-					sender.sendMessage("§cYou can not mute someone for less than 1 minute.");
-					return false;
+					player.sendMessage("§cYou can not mute someone for less than 1 minute.");
+					return;
 				}
 
 				if (playerData.contains(uuid)) {
@@ -75,7 +82,7 @@ public class Mute implements CommandExecutor {
 							playerData.set(uuid + ".mute.id", pwd);
 							playerData.save(playerfile);
 							if (target != null) {
-								sender.sendMessage("§aMuted " + Bukkit.getPlayer(args[0]).getName() + " for " + args[1] + " for " + reason);
+								player.sendMessage("§aMuted " + Bukkit.getPlayer(args[0]).getName() + " for " + args[1] + " for " + reason);
 								target.sendMessage("§c§l§m---------------------------------------------");
 								target.sendMessage("§cYou are currently muted for " + reason + ".");
 								target.sendMessage("§7Your mute will expire in §c" + calculateTime((long)playerData.getInt(uuid + ".mute.length") - unixTime));
@@ -84,26 +91,21 @@ public class Mute implements CommandExecutor {
 								target.sendMessage("§7Mute ID: §f#" + playerData.getString(uuid + ".mute.id"));
 								target.sendMessage("§c§l§m---------------------------------------------");
 							} else {
-								sender.sendMessage("§aMuted " + args[0] + " for " + args[1] + " for " + reason);
+								player.sendMessage("§aMuted " + args[0] + " for " + args[1] + " for " + reason);
 							}
 						} catch (IOException var16) {
 							var16.printStackTrace();
 						}
 					} else {
-						sender.sendMessage("§cPlayer is already muted!");
+						player.sendMessage("§cPlayer is already muted!");
 					}
 				}
 			} else {
-				sender.sendMessage("§cInvalid syntax. Correct: /mute <name> <length> <reason>");
+				player.sendMessage("§cInvalid syntax. Correct: /mute <name> <length> <reason>");
 			}
-		} else {
-			sender.sendMessage("§cYou do not have permission to execute this command!");
-		}
-
-		return false;
-	}
-
-	public static String calculateTime(long seconds) {
+    }
+    
+    public static String calculateTime(long seconds) {
 		int days = (int)TimeUnit.SECONDS.toDays(seconds);
 		long hours = TimeUnit.SECONDS.toHours(seconds) - (long)(days * 24);
 		long minute = TimeUnit.SECONDS.toMinutes(seconds) - TimeUnit.SECONDS.toHours(seconds) * 60L;

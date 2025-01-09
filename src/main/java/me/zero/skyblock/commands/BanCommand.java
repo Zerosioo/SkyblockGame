@@ -1,21 +1,27 @@
 package me.zero.skyblock.commands;
 
-import me.zero.skyblock.main.SkyblockGame;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import org.apache.commons.lang.RandomStringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
-public class Ban implements CommandExecutor {
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender.hasPermission("SkyblockGame.MOD")) {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
+import me.zero.skyblock.main.SkyblockGame;
+
+@CommandParameters(
+description = "Ban a player", 
+usages = "§cUsage: /ban <name> <reason>",
+rank = PlayerRank.MOD)
+public class BanCommand extends SkyBlockCommand {
+
+    @Override
+    public void execute(Player player, String[] args)     {
 			if (args.length >= 2) {
 				String reason = "";
 
@@ -45,8 +51,7 @@ public class Ban implements CommandExecutor {
 				}
 
 				if (uuid == null) {
-					sender.sendMessage("§cPlayer does not exist.");
-					return false;
+					player.sendMessage("§cPlayer does not exist.");
 				}
 
 				if (playerData.contains(uuid)) {
@@ -60,27 +65,23 @@ public class Ban implements CommandExecutor {
 							playerData.set(uuid + ".ban.id", pwd);
 							playerData.save(playerfile);
 							if (target == null) {
-								sender.sendMessage("§aPermanently banned " + args[0] + " for " + reason);
+								player.sendMessage("§aPermanently banned " + args[0] + " for " + reason);
 							}
 
 							if (target != null) {
-								sender.sendMessage("§aPermanently banned " + Bukkit.getPlayer(args[0]).getName() + " for " + reason);
+								player.sendMessage("§aPermanently banned " + Bukkit.getPlayer(args[0]).getName() + " for " + reason);
 								target.getPlayer().kickPlayer("§cYou are permanently banned from this server!\n\n§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + ((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getConfig().getString("bandomain") + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
 							}
 						} catch (IOException var12) {
 							var12.printStackTrace();
 						}
 					} else {
-						sender.sendMessage("§cPlayer is already banned!");
+						player.sendMessage("§cPlayer is already banned!");
 					}
 				}
 			} else {
-				sender.sendMessage("§cInvalid syntax. Correct: /ban <name> <reason>");
+				player.sendMessage("§cInvalid syntax. Correct: /ban <name> <reason>");
 			}
-		} else {
-			sender.sendMessage("§cYou do not have permission to execute this command!");
 		}
-
-		return false;
-	}
+    
 }

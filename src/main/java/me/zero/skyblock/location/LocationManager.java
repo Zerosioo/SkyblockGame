@@ -71,6 +71,6 @@ public class LocationManager {
     
     
     public void locationMessage(Player player, String message) {
-    player.sendMessage("§7   ◼️ §f" + message);
+    player.sendMessage("§7   ◻️ §f" + message);
     }
 }

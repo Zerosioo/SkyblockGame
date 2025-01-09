@@ -1,17 +1,21 @@
 package me.zero.skyblock.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-public class ReplaceHubPortalCommand implements CommandExecutor {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
 
-    
-    private final int[][] coordinates = {
+@CommandParameters(
+description = "Replace hub portal", 
+usages = "§cUsage: /replacehubportal <block>",
+rank = PlayerRank.ADMIN)
+public class ReplaceHubPortalCommand extends SkyBlockCommand {
+	
+	private final int[][] coordinates = {
             {-4, 70, -65}, {-3, 70, -65}, {-2, 70, -65},
             {-1, 70, -64}, {-2, 70, -64}, {-3, 70, -64},
             {-4, 70, -64}, {-5, 70, -64}, {-1, 70, -63},
@@ -22,18 +26,10 @@ public class ReplaceHubPortalCommand implements CommandExecutor {
     };
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("This command can only be run by a player.");
-            return true;
-        }
-
-        Player player = (Player) sender;
-
-        
+    public void execute(Player player, String[] args)     {
         if (args.length != 1) {
-            player.sendMessage("Usage: /replaceblocks <block>");
-            return true;
+            player.sendMessage("Usage: /replacehubportal <block>");
+            return;
         }
 
         
@@ -42,7 +38,7 @@ public class ReplaceHubPortalCommand implements CommandExecutor {
             blockType = Material.valueOf(args[0].toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Invalid block type: " + args[0]);
-            return true;
+            return;
         }
 
         
@@ -52,6 +48,6 @@ public class ReplaceHubPortalCommand implements CommandExecutor {
         }
 
         player.sendMessage("Blocks replaced with " + blockType.name() + "!");
-        return true;
+        return;
     }
 }

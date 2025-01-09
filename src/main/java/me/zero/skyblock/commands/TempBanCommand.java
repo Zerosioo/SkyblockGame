@@ -1,5 +1,8 @@
 package me.zero.skyblock.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import me.zero.skyblock.main.SkyblockGame;
 import java.io.File;
 import java.io.IOException;
@@ -11,20 +14,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.RandomStringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
-public class TempBan implements CommandExecutor {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
+
+@CommandParameters(
+description = "Temporarily ban a player", 
+usages = "§cUsage: /tempban <name> <length> <reason>",
+rank = PlayerRank.MOD)
+public class TempBanCommand extends SkyBlockCommand {
 	private static final Pattern periodPattern = Pattern.compile("([0-9]+)([hdwmy])");
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender.hasPermission("SkyblockGame.MOD")) {
-			if (args.length >= 3) {
+    @Override
+    public void execute(Player player, String[] args)     {
+        if (args.length >= 3) {
 				String reason = "";
 
 				for(int i = 2; i < args.length; ++i) {
@@ -52,15 +57,15 @@ public class TempBan implements CommandExecutor {
 				}
 
 				if (uuid == null) {
-					sender.sendMessage("§cPlayer does not exist.");
-					return false;
+					player.sendMessage("§cPlayer does not exist.");
+					return;
 				}
 
 				long unixTime = System.currentTimeMillis() / 1000L;
 				long banTime = parsePeriod(args[1]) / 1000L - 1L;
 				if (banTime < 59L) {
-					sender.sendMessage("§cYou can not ban someone for less than 1 minute.");
-					return false;
+					player.sendMessage("§cYou can not ban someone for less than 1 minute.");
+					return;
 				}
 
 				if (playerData.contains(uuid)) {
@@ -74,29 +79,24 @@ public class TempBan implements CommandExecutor {
 							playerData.set(uuid + ".ban.id", pwd);
 							playerData.save(playerfile);
 							if (target != null) {
-								sender.sendMessage("§aTempbanned " + Bukkit.getPlayer(args[0]).getName() + " for " + args[1] + " for " + reason);
+								player.sendMessage("§aTempbanned " + Bukkit.getPlayer(args[0]).getName() + " for " + args[1] + " for " + reason);
 								target.kickPlayer("§cYou are temporarily banned for §f" + calculateTime((long)playerData.getInt(uuid + ".ban.length") - unixTime) + " §cfrom this server!\n\n" + "§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + ((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getConfig().getString("bandomain") + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
 							} else {
-								sender.sendMessage("§aTempbanned " + args[0] + " for " + args[1] + " for " + reason);
+								player.sendMessage("§aTempbanned " + args[0] + " for " + args[1] + " for " + reason);
 							}
 						} catch (IOException var16) {
 							var16.printStackTrace();
 						}
 					} else {
-						sender.sendMessage("§cPlayer is already banned!");
+						player.sendMessage("§cPlayer is already banned!");
 					}
 				}
 			} else {
-				sender.sendMessage("§cInvalid syntax. Correct: /tempban <name> <length> <reason>");
+				player.sendMessage("§cInvalid syntax. Correct: /tempban <name> <length> <reason>");
 			}
-		} else {
-			sender.sendMessage("§cYou do not have permission to execute this command!");
-		}
-
-		return false;
-	}
-
-	public static String calculateTime(long seconds) {
+    }
+    
+    public static String calculateTime(long seconds) {
 		int days = (int)TimeUnit.SECONDS.toDays(seconds);
 		long hours = TimeUnit.SECONDS.toHours(seconds) - (long)(days * 24);
 		long minute = TimeUnit.SECONDS.toMinutes(seconds) - TimeUnit.SECONDS.toHours(seconds) * 60L;

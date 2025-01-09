@@ -1,41 +1,28 @@
 package me.zero.skyblock.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.zero.skyblock.main.SkyblockGame;
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class FlyCommand implements CommandExecutor {
-
-	private SkyblockGame plugin;
-
-    private final Set<Player> flyingPlayers = new HashSet<>();
+@CommandParameters(
+description = "Toggle flight", 
+usages = "§cUsage: /fly",
+rank = PlayerRank.GAMEMASTER)
+public class FlyCommand extends SkyBlockCommand {
 	
-	public FlyCommand(SkyblockGame plugin) {
-		this.plugin = plugin;
-   
-    }
-	
+	private final Set<Player> flyingPlayers = new HashSet<>();
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command!");
-            return true;
-        }
-
-        Player player = (Player) sender;
-
+    public void execute(Player player, String[] args)     {
         toggleFlight(player);
-        return true;
     }
-
     private void toggleFlight(Player player) {
         if (flyingPlayers.contains(player)) {
             player.setAllowFlight(false);

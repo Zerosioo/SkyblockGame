@@ -1,21 +1,28 @@
 package me.zero.skyblock.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import me.zero.skyblock.main.SkyblockGame;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
-public class Unmute implements CommandExecutor {
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender.hasPermission("SkyblockGame.JRHELPER")) {
-			if (args.length >= 1) {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
+
+@CommandParameters(
+description = "Unmute a player", 
+usages = "§cUsage: /unmute <name>",
+rank = PlayerRank.HELPER)
+public class UnmuteCommand extends SkyBlockCommand {
+
+    @Override
+    public void execute(Player player, String[] args)     {
+        if (args.length >= 1) {
 				Player target = Bukkit.getPlayerExact(args[0]);
 				File playerfile = new File(((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getDataFolder() + File.separator, "punishments.yml");
 				FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerfile);
@@ -36,8 +43,8 @@ public class Unmute implements CommandExecutor {
 				}
 
 				if (uuid == null) {
-					sender.sendMessage("Â§cPlayer does not exist.");
-					return false;
+					player.sendMessage("Â§cPlayer does not exist.");
+					return;
 				}
 
 				if (playerData.contains(uuid)) {
@@ -49,24 +56,19 @@ public class Unmute implements CommandExecutor {
 							playerData.set(uuid + ".mute.id", "");
 							playerData.save(playerfile);
 							if (target != null) {
-								sender.sendMessage("Â§aUnmuted " + Bukkit.getPlayer(args[0]).getName());
+								player.sendMessage("Â§aUnmuted " + Bukkit.getPlayer(args[0]).getName());
 							} else {
-								sender.sendMessage("Â§aUnmuted " + args[0]);
+								player.sendMessage("Â§aUnmuted " + args[0]);
 							}
 						} catch (IOException var11) {
 							var11.printStackTrace();
 						}
 					} else {
-						sender.sendMessage("Â§cPlayer is not muted!");
+						player.sendMessage("Â§cPlayer is not muted!");
 					}
 				}
 			} else {
-				sender.sendMessage("Â§cInvalid syntax. Correct: /unmute <name>");
+				player.sendMessage("Â§cInvalid syntax. Correct: /unmute <name>");
 			}
-		} else {
-			sender.sendMessage("Â§cYou do not have permission to execute this command!");
-		}
-
-		return false;
-	}
+    }
 }

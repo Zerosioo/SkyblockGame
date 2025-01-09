@@ -69,9 +69,7 @@ public class SkyblockGame extends JavaPlugin {
 
         // Command registration
         SkyBlockLogger.info(ChatColor.GREEN + "Registering commands...");
-        initializeCommands();
         registerCommands();
-        SkyBlockLogger.info(ChatColor.GREEN + "Registered commands!");
 
         // Config
         SkyBlockLogger.info(ChatColor.GREEN + "Loading Configuration");
@@ -140,33 +138,6 @@ public class SkyblockGame extends JavaPlugin {
         }
     }
 
-    public void initializeCommands() {
-        getCommand("kaboom").setExecutor(new KaboomCommand(this));
-        getCommand("fly").setExecutor(new FlyCommand(this));
-        getCommand("debug").setExecutor(new DebugCommand(this));
-        getCommand("ping").setExecutor(new PingCommand(this));
-        getCommand("boop").setExecutor(new BoopCommand(this));
-        getCommand("op").setExecutor(new OpCommand(this));
-        getCommand("gm").setExecutor(new Gamemode(this));
-        getCommand("reboot").setExecutor(new RebootCommand(this));
-        getCommand("maintenance").setExecutor(new MaintenanceCommand());
-        getCommand("help").setExecutor(new HelpCommand());
-        getCommand("bypass").setExecutor(new BypassCommand());
-        getCommand("mute").setExecutor(new Mute());
-        getCommand("unmute").setExecutor(new Unmute());
-        getCommand("kick").setExecutor(new Kick());
-        getCommand("tempban").setExecutor(new TempBan());
-        getCommand("ban").setExecutor(new Ban());
-        getCommand("unban").setExecutor(new Unban());
-        getCommand("replacehubportal").setExecutor(new ReplaceHubPortalCommand());
-        getCommand("noportal").setExecutor(new NoPortalCommand(this));
-        getCommand("reloadSkyblockGame").setExecutor(new ReloadCommand(this));
-        getCommand("godmode").setExecutor(new GodModeCommand());
-        getCommand("coins").setExecutor(new CoinsCommand());
-        getCommand("setrank").setExecutor(new SetRankCommand());
-        getCommand("skyblockxp").setExecutor(new SkyblockXPCommand());
-    }
-
     public void registerEvents() {
         // Register all event listeners
        getServer().getPluginManager().registerEvents(new InventoryClick(), this);
@@ -224,7 +195,6 @@ public void loadNPCs() {
     }
     
     private void registerCommands(){
-        SkyBlockLogger.info("Registering commands...");
         int registered = 0;
         for (Class< ? extends SkyBlockCommand> clazz : new Reflections("me.zero.skyblock.commands")
                 .getSubTypesOf(SkyBlockCommand.class)){

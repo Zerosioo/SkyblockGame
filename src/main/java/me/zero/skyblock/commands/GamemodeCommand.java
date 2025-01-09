@@ -1,27 +1,23 @@
 package me.zero.skyblock.commands;
 
-import me.zero.skyblock.main.SkyblockGame;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
 
-public class Gamemode implements CommandExecutor {
-  
-  private final SkyblockGame plugin;
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
 
-    public Gamemode(SkyblockGame plugin) {
-        this.plugin = plugin;
-    }
+@CommandParameters(
+aliases = {"gm"},
+description = "Toggle gamemode", 
+usages = "§cUsage: /gamemode <0|1|2|3>",
+rank = PlayerRank.ADMIN)
+public class GamemodeCommand extends SkyBlockCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            if (player.hasPermission("SkyblockGame.ADMIN")) {
-                if (args.length == 1) {
+    public void execute(Player player, String[] args)     {
+        if (args.length == 1) {
                     String mode = args[0].toLowerCase();
 
                     switch (mode) {
@@ -53,12 +49,5 @@ public class Gamemode implements CommandExecutor {
                 } else {
                     player.sendMessage(ChatColor.RED + "Usage: /gm <0|1|2|3>");
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
-            }
-        } else {
-            sender.sendMessage(ChatColor.RED + "You must be a player!");
-        }
-        return true;
     }
 }

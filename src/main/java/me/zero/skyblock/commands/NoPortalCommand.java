@@ -1,27 +1,24 @@
 package me.zero.skyblock.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
 import me.zero.skyblock.main.SkyblockGame;
 
-public class NoPortalCommand implements CommandExecutor {
-
-    private final SkyblockGame plugin;
-
-    public NoPortalCommand(SkyblockGame plugin) {
-        this.plugin = plugin;
-    }
-
-  
-    private final int[][] mainCoordinates = {
+@CommandParameters(
+description = "Hollows out the hub portal", 
+usages = "§cUsage: /noportal",
+rank = PlayerRank.ADMIN)
+public class NoPortalCommand extends SkyBlockCommand {
+	
+	private final int[][] mainCoordinates = {
             {-4, -65}, {-3, -65}, {-2, -65},
             {-1, -64}, {-2, -64}, {-3, -64},
             {-4, -64}, {-5, -64}, {-1, -63},
@@ -41,23 +38,17 @@ public class NoPortalCommand implements CommandExecutor {
     };
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Get in da game bitch");
-            return true;
-        }
-
-        Player player = (Player) sender;
+    public void execute(Player player, String[] args)     {
         World world = player.getWorld();
 
         
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(SkyblockGame.getPlugin(SkyblockGame.class), () -> {
             
             for (int z = -61; z >= -65; z--) {
                 
                 final int currentZ = z;
 
-                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                Bukkit.getScheduler().runTaskLater(SkyblockGame.getPlugin(SkyblockGame.class), () -> {
                     
                     for (int y = 70; y >= 54; y--) {
                         int currentY = y;
@@ -85,6 +76,7 @@ public class NoPortalCommand implements CommandExecutor {
         });
 
         player.sendMessage("§cAyo Admon you doin sum fun stuff " + ChatColor.BLUE + "^⁠_⁠^");
-        return true;
+        return;
     }
+    
 }

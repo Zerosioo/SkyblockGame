@@ -2,39 +2,40 @@ package me.zero.skyblock.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-public class MaintenanceCommand implements CommandExecutor {
+import me.zero.skyblock.commands.abstraction.*;
+import me.zero.skyblock.ranks.PlayerRank;
+
+@CommandParameters(
+description = "Toggle maintenance mode", 
+usages = "§cUsage: /maintenance <true|false>",
+rank = PlayerRank.ADMIN)
+public class MaintenanceCommand extends SkyBlockCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("SkyblockGame.ADMIN")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
-            return true;
-        }
-
+    public void execute(Player player, String[] args)     {
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Usage: /maintenance <true|false>");
-            return true;
+            player.sendMessage(ChatColor.RED + "Usage: /maintenance <true|false>");
+            return;
         }
 
         String state = args[0].toLowerCase();
 
         switch (state) {
             case "true":
+            case "on":
                 Bukkit.setWhitelist(true);
                 Bukkit.broadcastMessage(ChatColor.GOLD + "The server is now in maintenance mode. Whitelist is enabled.");
                 break;
             case "false":
+            case "off":
                 Bukkit.setWhitelist(false);
                 Bukkit.broadcastMessage(ChatColor.GOLD + "Maintenance mode is now off. Whitelist is disabled.");
                 break;
             default:
-                sender.sendMessage(ChatColor.RED + "Invalid argument. Use 'true' or 'false'.");
+                player.sendMessage(ChatColor.RED + "Invalid argument. Use 'true' or 'false'.");
                 break;
         }
-        return true;
     }
 }

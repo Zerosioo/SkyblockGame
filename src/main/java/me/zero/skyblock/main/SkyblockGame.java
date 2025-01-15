@@ -27,7 +27,6 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 
 import lombok.Getter;
-import org.reflections.Reflections;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.List;
@@ -194,20 +193,19 @@ public void loadNPCs() {
         return instance;
     }
     
-    private void registerCommands(){
-        int registered = 0;
-        for (Class< ? extends SkyBlockCommand> clazz : new Reflections("me.zero.skyblock.commands")
-                .getSubTypesOf(SkyBlockCommand.class)){
-            try {
-                SkyBlockCommand skyBlockCommand = clazz.getDeclaredConstructor().newInstance();
-                skyBlockCommand.register();
-                registered++;
-            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
-                     IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+    private void registerCommands() {
+    int registered = 0;
+    for (Class<? extends SkyBlockCommand> clazz : ReflectionsReplacement.getSubTypesOf("me.zero.skyblock.commands")) {
+        try {
+            SkyBlockCommand skyBlockCommand = clazz.getDeclaredConstructor().newInstance();
+            skyBlockCommand.register();
+            registered++;
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        SkyBlockLogger.info("Successfully registered " + registered + " commands.");
     }
+    SkyBlockLogger.info("Successfully registered " + registered + " commands.");
+}
+
 
 }

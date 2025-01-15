@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.zero.skyblock.main.SkyblockGame;
 import me.zero.skyblock.ranks.PlayerRank;
 import me.zero.skyblock.user.User;
+import me.zero.skyblock.util.DiscordWebhook;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +14,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,12 +46,21 @@ public abstract class SkyBlockCommand implements CommandExecutor {
         PlayerRank crank = user.rank;
         
         if (!crank.isAboveOrEqual(commandParameters.rank())) {
-            sender.sendMessage("§cYou need " + commandParameters.rank().getPrefixColoured() + "§c rank to use this command!");
+            sender.sendMessage("Â§cYou need " + commandParameters.rank().getPrefixColoured() + "Â§c rank to use this command!");
             return true;
         }
         
+         StringBuilder cmd = new StringBuilder(label);
+        for (String arg : args) {
+            cmd.append(" ").append(arg);
+        }
+        
+        if (commandParameters.rank().isStaff()) {
+            sendDiscordNotification(sender.getName(), cmd.toString());
+        }
+        
         if ((commandParameters.requireOperator() && !sender.isOp())) {
-            sender.sendMessage("§cYou need §aOPERATOR §cto use this command!");
+            sender.sendMessage("Â§cYou need Â§aOPERATOR Â§cto use this command!");
             return true;
         }
 
@@ -97,5 +110,24 @@ public abstract class SkyBlockCommand implements CommandExecutor {
             return arguments;
         }
     }
-}
+    
+    private void sendDiscordNotification(String senderName, String command) {
+        new BukkitRunnable(){
 
+            public void run() {
+                DiscordWebhook webhook = new DiscordWebhook("https://discord.com/api/webhooks/1313856846297301133/-1PndedywQJXe0UvLDVUKQjf-DqQIdpWXGoEHyV08A0kCcXUdSrpddrcTJSu6k_3wSeo");
+                webhook.setUsername("STAFF COMMANDS");
+                webhook.setAvatarUrl("https://media.discordapp.net/attachments/1311748865241907331/1322066977165934703/Red_Stained_Glass.png?ex=677b63d2&is=677a1252&hm=106462fe29fa98ad64fc9e6d46e1e4fc30f2b25b9c18baed4c683d068294d70b&");
+                
+           webhook.setContent("**" + senderName + "** used command **" + command + "**");
+           
+                try {
+                    webhook.execute();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously((Plugin)SkyblockGame.getPlugin(SkyblockGame.class));
+    }
+}

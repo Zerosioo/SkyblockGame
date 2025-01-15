@@ -46,7 +46,7 @@ public abstract class SkyBlockCommand implements CommandExecutor {
         PlayerRank crank = user.rank;
         
         if (!crank.isAboveOrEqual(commandParameters.rank())) {
-            sender.sendMessage("Â§cYou need " + commandParameters.rank().getPrefixColoured() + "Â§c rank to use this command!");
+            sender.sendMessage("§cYou need " + commandParameters.rank().getPrefixColoured() + "§c rank to use this command!");
             return true;
         }
         
@@ -55,12 +55,16 @@ public abstract class SkyBlockCommand implements CommandExecutor {
             cmd.append(" ").append(arg);
         }
         
-        if (commandParameters.rank().isStaff()) {
-            sendDiscordNotification(sender.getName(), cmd.toString());
+        if (commandParameters.rank().isStaff() && commandParameters.rank().isBelowOrEqual(PlayerRank.GAMEMASTER)) {
+            sendDiscordStaffNotification(sender.getName(), cmd.toString());
+        }
+        
+        if (commandParameters.rank().isAboveOrEqual(PlayerRank.ADMIN)) {
+            sendDiscordAdminNotification(sender.getName(), cmd.toString());
         }
         
         if ((commandParameters.requireOperator() && !sender.isOp())) {
-            sender.sendMessage("Â§cYou need Â§aOPERATOR Â§cto use this command!");
+            sender.sendMessage("§cYou need §aOPERATOR §cto use this command!");
             return true;
         }
 
@@ -111,7 +115,7 @@ public abstract class SkyBlockCommand implements CommandExecutor {
         }
     }
     
-    private void sendDiscordNotification(String senderName, String command) {
+    private void sendDiscordStaffNotification(String senderName, String command) {
         new BukkitRunnable(){
 
             public void run() {
@@ -119,7 +123,27 @@ public abstract class SkyBlockCommand implements CommandExecutor {
                 webhook.setUsername("STAFF COMMANDS");
                 webhook.setAvatarUrl("https://media.discordapp.net/attachments/1311748865241907331/1322066977165934703/Red_Stained_Glass.png?ex=677b63d2&is=677a1252&hm=106462fe29fa98ad64fc9e6d46e1e4fc30f2b25b9c18baed4c683d068294d70b&");
                 
-           webhook.setContent("**" + senderName + "** used command **" + command + "**");
+           webhook.setContent("**" + senderName + "** used command **/" + command + "**");
+           
+                try {
+                    webhook.execute();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously((Plugin)SkyblockGame.getPlugin(SkyblockGame.class));
+    }
+    
+    private void sendDiscordAdminNotification(String senderName, String command) {
+        new BukkitRunnable(){
+
+            public void run() {
+                DiscordWebhook webhook = new DiscordWebhook("https://discord.com/api/webhooks/1313856846297301133/-1PndedywQJXe0UvLDVUKQjf-DqQIdpWXGoEHyV08A0kCcXUdSrpddrcTJSu6k_3wSeo");
+                webhook.setUsername("ADMIN COMMANDS");
+                webhook.setAvatarUrl("https://media.discordapp.net/attachments/1311748865241907331/1322066977165934703/Red_Stained_Glass.png?ex=677b63d2&is=677a1252&hm=106462fe29fa98ad64fc9e6d46e1e4fc30f2b25b9c18baed4c683d068294d70b&");
+                
+           webhook.setContent("**" + senderName + "** used command **/" + command + "**");
            
                 try {
                     webhook.execute();

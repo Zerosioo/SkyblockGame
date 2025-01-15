@@ -29,6 +29,8 @@ public class LocationManager {
 
     private void onLocationChange(Player player, User user, SkyblockLocation oldLocation, SkyblockLocation newLocation) {
         String locationId = newLocation.name();
+        
+        user.debug("You moved from " + oldLocation.getName() + " §fto " + newLocation.getName() + "§f.");
 
         if (user.booleanHandler.getBoolean(locationId) == false) {
             user.booleanHandler.setBoolean(locationId, true);
@@ -42,7 +44,6 @@ public class LocationManager {
             player.sendMessage(" §6§lNEW AREA DISCOVERED!");
             player.sendMessage("§7  ⏣ " + newLocation.getName().toUpperCase());
             player.sendMessage("");
-            
             
          if (getPlayerLocation(player) == SkyblockLocation.VILLAGE) {
                 locationMessage(player, "Explore the area to learn more about §bSkyBlock§f.");
@@ -71,6 +72,6 @@ public class LocationManager {
     
     
     public void locationMessage(Player player, String message) {
-    player.sendMessage("§7   ◻️ §f" + message);
+    player.sendMessage("§7   ◼️ §f" + message);
     }
 }

@@ -2,6 +2,7 @@ package me.zero.skyblock.listeners;
 
 import me.zero.skyblock.inventory.GUI;
 import me.zero.skyblock.main.SkyblockGame;
+import me.zero.skyblock.user.User;
 import me.zero.skyblock.util.DiscordWebhook;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class InventoryClick implements Listener {
         }
         
         Player player = (Player) e.getWhoClicked();
+        User user = User.getUser(player.getUniqueId());
         
                 if (e.getCurrentItem().hasItemMeta()) {
             if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§aSkyblock Menu §7(Right Click)") || e.getCurrentItem().getItemMeta().getDisplayName().equals("§8Quiver Arrow")) {
@@ -39,9 +41,8 @@ public class InventoryClick implements Listener {
           
        }
        
-       if (e.getCurrentItem().getItemMeta().getDisplayName().contains("Close") || e.getCurrentItem().getItemMeta().getDisplayName().contains("") || e.getCurrentItem().getItemMeta().getDisplayName().contains(null)) {}
+       if (e.getCurrentItem().getItemMeta().getDisplayName() != " " || e.getCurrentItem().getItemMeta().getDisplayName() != null || e.getCurrentItem().getItemMeta().getDisplayName() != "§cClose") {
        
-    else {
      new BukkitRunnable(){
 
             public void run() {
@@ -60,7 +61,8 @@ public class InventoryClick implements Listener {
             }
         }.runTaskAsynchronously((Plugin)SkyblockGame.getPlugin(SkyblockGame.class));
     
-      }
+      user.debug("You clicked on " + e.getCurrentItem().getItemMeta().getDisplayName());
+     }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

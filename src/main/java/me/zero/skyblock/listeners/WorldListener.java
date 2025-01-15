@@ -1,4 +1,4 @@
-package me.zero.skyblock.main;
+package me.zero.skyblock.listeners;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
-public class WorldSaveListener implements Listener {
+public class WorldListener implements Listener {
 
     private static final String[] PROTECTED_WORLDS = {"world", "hub", "lobby"};
 

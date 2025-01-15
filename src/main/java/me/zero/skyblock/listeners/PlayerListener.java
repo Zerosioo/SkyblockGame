@@ -1,5 +1,6 @@
 package me.zero.skyblock.listeners;
 
+import me.zero.skyblock.main.Loader;
 import me.zero.skyblock.main.SkyblockGame;
 import me.zero.skyblock.user.User;
 import me.zero.skyblock.ranks.PlayerRank;
@@ -44,40 +45,18 @@ public class PlayerListener implements Listener {
         team.addEntry(player.getName());
         player.setScoreboard(scoreboard);
 
-        // Start a task to update display name every second (20 ticks)
-        new BukkitRunnable() {
-            String lastDisplayName = initialName;
-            String lastPlayerListName = initialName;
-
-            @Override
-            public void run() {
-                // Update rank and prefix in case they have changed
-                String updatedColour = user.rank.getColour();
-                String updatedLevelPrefix = user.LevelPrefix();
-                String updatedDisplayName = updatedLevelPrefix + " " + updatedColour + player.getName();
-                String updatedPlayerListName = updatedLevelPrefix + " " + updatedColour + player.getName();
-
-                // Only update if the name has changed to avoid unnecessary updates
-                if (!lastDisplayName.equals(updatedDisplayName)) {
-                    player.setDisplayName(updatedDisplayName);
-                    lastDisplayName = updatedDisplayName;
-                }
-                if (!lastPlayerListName.equals(updatedPlayerListName)) {
-                    player.setPlayerListName(updatedPlayerListName);
-                    lastPlayerListName = updatedPlayerListName;
-                }
-
-                // If the player logs out, cancel the task
-                if (!player.isOnline()) {
-                    cancel();
-                }
-            }
-        }.runTaskTimer(SkyblockGame.getPlugin(SkyblockGame.class), 0L, 20L);  // Run every 20 ticks (1 second)
         
-        SkyblockGame.getNpcRegistry().spawnAll(player);
+        Loader.getNpcRegistry().spawnAll(player);
         
         PacketUtils.inject(player);
         
+        if (rank.isStaff()) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (rank.isStaff()) {
+                onlinePlayer.sendMessage("§b[STAFF] " + rank.getPrefix() + player.getDisplayName() + " §ejoined.");
+            }
+        }
+      }
     }
 
     @EventHandler
@@ -93,7 +72,7 @@ public class PlayerListener implements Listener {
             team.unregister();
         }
         
-         SkyblockGame.getNpcRegistry().despawnAll(player);
+         Loader.getNpcRegistry().despawnAll(player);
     }
 
     // Handle player movement
@@ -112,14 +91,7 @@ public class PlayerListener implements Listener {
             e.getFrom().getBlockY() != e.getTo().getBlockY() ||
             e.getFrom().getBlockZ() != e.getTo().getBlockZ()) {
             
-            // Update the display name and player list name on move
-            String updatedColour = user.rank.getColour();
-            String updatedLevelPrefix = user.LevelPrefix();
-            String updatedDisplayName = updatedLevelPrefix + " " + updatedColour + player.getName();
-            String updatedPlayerListName = updatedLevelPrefix + " " + updatedColour + player.getName();
-
-            player.setDisplayName(updatedDisplayName);
-            player.setPlayerListName(updatedPlayerListName);
+            
             ItemStack oakLog = new ItemStack(Material.LOG, 10, (short) 0);
         
     if (player.getInventory().containsAtLeast(oakLog, 10) && user.booleanHandler.getBoolean("timber_quest_collect_logs") == true) {
@@ -133,22 +105,9 @@ public class PlayerListener implements Listener {
     player.sendMessage(" §fTalk to the Lumberjack");
     player.sendMessage("");
     	
+    
     }
-
-            // Update scoreboard if necessary
-            Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-            Team team = scoreboard.getTeam(player.getName());
-            if (team != null) {
-                team.setPrefix(updatedLevelPrefix + " " + updatedColour);
-            } else {
-                team = scoreboard.registerNewTeam(player.getName());
-                team.setPrefix(updatedLevelPrefix + " " + updatedColour);
-                team.addEntry(player.getName());
             }
-
-            player.setScoreboard(scoreboard);
-        }
-        
         
     }
     
@@ -163,7 +122,7 @@ public class PlayerListener implements Listener {
        @EventHandler
         public void dropEvent(PlayerDropItemEvent e) {
         	
-        	    if (e.getItemDrop().getItemStack().hasItemMeta() && (e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("§aSkyblock Menu §7(Right Click)") || e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("§8Quiver Arrow"))) {
+        	    if (e.getItemDrop().getItemStack().hasItemMeta() && (e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("Skyblock Menu (Right Click)") || e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("Quiver Arrow"))) {
             e.setCancelled(true);
             return;
         	

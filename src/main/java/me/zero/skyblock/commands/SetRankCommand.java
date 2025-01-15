@@ -28,20 +28,20 @@ public class SetRankCommand extends SkyBlockCommand {
                     User.getUser(target).setRank(newRank);
                     
                     String prefix = newRank == PlayerRank.DEFAULT ? "§7Default" : newRank.getPrefixColoured();
-                    player.sendMessage("§aYou gifted" + args[0] + "' the " + prefix + " rank§a!");
+                    player.sendMessage("§aYou gifted " + args[0] + " the " + prefix + " rank§a!");
                     
                     String pprefix = User.getUser(player).getRank().getPrefix() + player.getName();
                     
                     Bukkit.broadcastMessage("");
-                    Bukkit.broadcastMessage("§e§kk§r§c§kk§4§kk §r" + pprefix + " §egifted the " + prefix + " §erank to " + newRank.getColour() + target.getName() + "§e! §4§kk§6§kk§e§kk");
-                    Bukkit.broadcastMessage("§eThey have gifted §6<rgp> §eranks so far!");
+                    Bukkit.broadcastMessage("§e§kk§r§c§kk§4§kk§r " + pprefix + " §egifted the " + prefix + " §erank to " + newRank.getColour() + target.getName() + "§e! §4§kk§6§kk§e§kk");
+                    Bukkit.broadcastMessage("§eThey have gifted §6" + user.getGiftedRanks() + " §eranks so far!");
                     Bukkit.broadcastMessage("");
                     return;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
-                player.sendMessage("§cUsage: /setrank <player> <rank>");
+                player.sendMessage("§cUsage: /rank <player> <rank>");
                 return;
             }
     }

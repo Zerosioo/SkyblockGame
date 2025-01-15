@@ -4,6 +4,8 @@ import me.zero.skyblock.main.SkyblockGame;
 import me.zero.skyblock.ranks.PlayerRank;
 import me.zero.skyblock.util.SUtil;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -27,6 +29,7 @@ public class User
     public PlayerRank rank;
     private int skyblocklevel;
     private int skyblockxp;
+    private int giftedranks;
     public final BooleanHandler booleanHandler = new BooleanHandler();
     
     
@@ -37,6 +40,7 @@ public class User
         this.bankCoins = 0;
         this.skyblocklevel = 0;
         this.skyblockxp = 0;
+        this.giftedranks = 0;
         this.rank = PlayerRank.DEFAULT;
 
         if (!USER_FOLDER.exists()) USER_FOLDER.mkdirs();
@@ -71,6 +75,7 @@ public class User
         this.rank = PlayerRank.valueOf(this.config.getString("rank"));
         this.skyblocklevel = config.getInt("skyblocklevel");
         this.skyblockxp = config.getInt("skyblockxp");
+        this.giftedranks = config.getInt("giftedranks");
         
         if (this.config.contains("booleanStates")) {
     Map<String, Boolean> savedBooleans = (Map<String, Boolean>) this.config.get("booleanStates");
@@ -90,6 +95,7 @@ public class User
         config.set("skyblocklevel", skyblocklevel);
         config.set("skyblockxp", skyblockxp);
         this.config.set("rank", this.rank.toString());
+        config.set("giftedranks", giftedranks);
         
         this.config.set("booleanStates", booleanHandler.getAllBooleans());
 
@@ -132,12 +138,35 @@ public class User
 
     public void setRank(PlayerRank rank) {
         this.rank = rank;
+        giftedranks++;
+        Player player = Bukkit.getPlayer(uuid);
+        String colour = rank.getColour();
+        String levelPrefix = LevelPrefix();
+
+        String initialName = levelPrefix + " " + colour + player.getName();
+        player.setDisplayName(initialName);
+        player.setPlayerListName(initialName);
+
+        // Register player on scoreboard
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam(player.getName());
+        if (team == null) {
+            team = scoreboard.registerNewTeam(player.getName());
+        }
+        team.setPrefix(levelPrefix + " " + colour);
+        team.addEntry(player.getName());
+        player.setScoreboard(scoreboard);
+        save();
     }
 
     public PlayerRank getRank() {
         return this.rank;
     }
-
+    
+    public int getGiftedRanks() {
+    	
+    	return giftedranks;
+    }
     public static User getUser(UUID uuid) {
         if (uuid == null) {
             return null;
@@ -175,6 +204,23 @@ public class User
         player.sendMessage("§b§m                                             ");
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
     }
+    
+        String colour = rank.getColour();
+        String levelPrefix = LevelPrefix();
+
+        String initialName = levelPrefix + " " + colour + player.getName();
+        player.setDisplayName(initialName);
+        player.setPlayerListName(initialName);
+
+        // Register player on scoreboard
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam(player.getName());
+        if (team == null) {
+            team = scoreboard.registerNewTeam(player.getName());
+        }
+        team.setPrefix(levelPrefix + " " + colour);
+        team.addEntry(player.getName());
+        player.setScoreboard(scoreboard);
 }
 
 
@@ -225,5 +271,11 @@ public class User
     public UUID getUuid() {
         return this.uuid;
     }
-
+    
+    public void debug(String message) {
+    	Player player = Bukkit.getPlayer(uuid);
+    	if (booleanHandler.getBoolean("debug") == true) {
+    	player.sendMessage("§9[DEBUG] §f" + message);
+    	}
+    }
 }

@@ -28,7 +28,7 @@ public class SetRankCommand extends SkyBlockCommand {
                     User.getUser(target).setRank(newRank);
                     
                     String prefix = newRank == PlayerRank.DEFAULT ? "§7Default" : newRank.getPrefixColoured();
-                    player.sendMessage("§aYou gifted " + args[0] + " the " + prefix + " rank§a!");
+                    player.sendMessage("§aYou gifted " + args[0] + " the " + prefix + " §arank§a!");
                     
                     String pprefix = User.getUser(player).getRank().getPrefix() + player.getName();
                     

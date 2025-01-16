@@ -105,22 +105,12 @@ public class ChatListener implements Listener {
         	}
         }.runTaskTimer(SkyblockGame.getPlugin(SkyblockGame.class), 0L, 15 * 60 * 20L); // 15 mins
         
-        // Start the reboot countdown after a delay of 2.5 hours
         new BukkitRunnable() {
             @Override
             public void run() {
                 startRebootCountdown();
             }
-        }.runTaskLater(SkyblockGame.getPlugin(SkyblockGame.class), 9000 * 20L); // 2.5 hours delay 
-        
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                
-                
-                
-            }
-        }.runTaskLater(SkyblockGame.getPlugin(SkyblockGame.class), 20L); 
+        }.runTaskLater(SkyblockGame.getPlugin(SkyblockGame.class), 6 * 60 * 20L); // 6 min delay for magmanodes xd
 
     }
     

@@ -4,6 +4,7 @@ import me.zero.skyblock.main.SkyblockGame;
 import me.zero.skyblock.ranks.PlayerRank;
 import me.zero.skyblock.util.SUtil;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.entity.Player;
@@ -25,13 +26,13 @@ public class User
     private UUID uuid;
     private final Config config;
     private long coins;
+    private long bits;
     private long bankCoins;
     public PlayerRank rank;
     private int skyblocklevel;
     private int skyblockxp;
     private int giftedranks;
     public final BooleanHandler booleanHandler = new BooleanHandler();
-    
     
     private User(UUID uuid)
     {
@@ -66,31 +67,30 @@ public class User
         load();
     }
 
-    public void load()
-    {
+    public void load() {
+    this.uuid = UUID.fromString(config.getString("uuid"));
+    this.coins = config.getLong("coins");
+    this.bits = config.getLong("bits");
+    this.bankCoins = config.getLong("bankCoins");
+    this.rank = PlayerRank.valueOf(this.config.getString("rank"));
+    this.skyblocklevel = config.getInt("skyblocklevel");
+    this.skyblockxp = config.getInt("skyblockxp");
+    this.giftedranks = config.getInt("giftedranks");
 
-        this.uuid = UUID.fromString(config.getString("uuid"));
-        this.coins = config.getLong("coins");
-        this.bankCoins = config.getLong("bankCoins");
-        this.rank = PlayerRank.valueOf(this.config.getString("rank"));
-        this.skyblocklevel = config.getInt("skyblocklevel");
-        this.skyblockxp = config.getInt("skyblockxp");
-        this.giftedranks = config.getInt("giftedranks");
-        
-        if (this.config.contains("booleanStates")) {
+    if (this.config.contains("booleanStates")) {
     Map<String, Boolean> savedBooleans = (Map<String, Boolean>) this.config.get("booleanStates");
     if (savedBooleans != null) {
         savedBooleans.forEach(booleanHandler::setBoolean);
-    }
-}
+        }
+     }
+  }
 
-
-    }
 
     public void save()
     {
         config.set("uuid", uuid.toString());
         config.set("coins", coins);
+        config.set("bits", bits);
         config.set("bankCoins", bankCoins);
         config.set("skyblocklevel", skyblocklevel);
         config.set("skyblockxp", skyblockxp);
@@ -98,7 +98,6 @@ public class User
         config.set("giftedranks", giftedranks);
         
         this.config.set("booleanStates", booleanHandler.getAllBooleans());
-
 
         config.save();
     }
@@ -135,7 +134,38 @@ public class User
         this.coins = coins;
     }
     
+    public void addCoins(long coins) {
+        this.coins += coins;
+    }
 
+    public void subCoins(long coins) {
+        this.coins -= coins;
+    }
+
+    public void addBankCoins(long bankCoins) {
+        this.bankCoins += bankCoins;
+    }
+
+    public void subBankCoins(long bankCoins) {
+        this.bankCoins -= bankCoins;
+    }
+    
+    public long getBits() {
+    return bits;
+    }
+    
+    public void setBits(long bits) {
+    	this.bits = bits;
+    }
+    
+    public void addBits(long bits) {
+        this.bits += bits;
+    }
+
+    public void subBits(long bits) {
+        this.bits -= bits;
+    }
+    
     public void setRank(PlayerRank rank) {
         this.rank = rank;
         giftedranks++;
@@ -221,7 +251,7 @@ public class User
         team.setPrefix(levelPrefix + " " + colour);
         team.addEntry(player.getName());
         player.setScoreboard(scoreboard);
-}
+       }
 
 
     public double getNextskyblocklevelXP() {

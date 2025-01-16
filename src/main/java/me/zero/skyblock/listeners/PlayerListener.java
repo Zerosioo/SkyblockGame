@@ -25,25 +25,16 @@ public class PlayerListener implements Listener {
         User user = User.getUser(player.getUniqueId());
         user.load();
         user.booleanHandler.setBoolean("NONE", true); // to prevent none reg discovery message.
+        e.setJoinMessage(null);
 
-        // Initial rank and level prefix setup
         PlayerRank rank = user.rank;
+        
         String colour = rank.getColour();
         String levelPrefix = user.LevelPrefix();
 
         String initialName = levelPrefix + " " + colour + player.getName();
         player.setDisplayName(initialName);
         player.setPlayerListName(initialName);
-
-        // Register player on scoreboard
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        Team team = scoreboard.getTeam(player.getName());
-        if (team == null) {
-            team = scoreboard.registerNewTeam(player.getName());
-        }
-        team.setPrefix(levelPrefix + " " + colour);
-        team.addEntry(player.getName());
-        player.setScoreboard(scoreboard);
 
         
         Loader.getNpcRegistry().spawnAll(player);
@@ -53,7 +44,7 @@ public class PlayerListener implements Listener {
         if (rank.isStaff()) {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (rank.isStaff()) {
-                onlinePlayer.sendMessage("§b[STAFF] " + rank.getPrefix() + player.getDisplayName() + " §ejoined.");
+                onlinePlayer.sendMessage("§b[STAFF] " + rank.getPrefix() + player.getName() + " §ejoined.");
             }
         }
       }
@@ -64,6 +55,7 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
         User user = User.getUser(player.getUniqueId());
         user.save();
+        e.setQuitMessage(null);
 
         // Clean up scoreboard when player quits
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();

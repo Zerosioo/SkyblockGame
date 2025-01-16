@@ -75,7 +75,7 @@ public class NoPortalCommand extends SkyBlockCommand {
             }
         });
 
-        player.sendMessage("§cAyo Admon you doin sum fun stuff " + ChatColor.BLUE + "^⁠_⁠^");
+        player.sendMessage("§aRemoving hub portal, watch out!!");
         return;
     }
     

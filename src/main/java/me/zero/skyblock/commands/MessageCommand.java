@@ -14,8 +14,7 @@ import me.zero.skyblock.user.User;
 @CommandParameters(
 aliases = {"msg"},
 description = "Message a player", 
-usages = "§cUsage: /msg <player> <message>",
-rank = PlayerRank.DEFAULT)
+usages = "§cUsage: /msg <player> <message>")
 public class MessageCommand extends SkyBlockCommand {
 
     @Override

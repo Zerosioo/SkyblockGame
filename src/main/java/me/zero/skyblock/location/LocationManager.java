@@ -62,10 +62,9 @@ public class LocationManager {
     }
     
     public String getCurrentLocationName(Player player) {
-    SkyblockLocation currentLocation = playerLocations.getOrDefault(player, SkyblockLocation.NONE);
-    return currentLocation != null ? currentLocation.getName() : "Unknown Location";
+        SkyblockLocation currentLocation = playerLocations.get(player);
+        return currentLocation.getName();
     }
-
     
     public SkyblockLocation getPlayerLocation(Player player) {
         return playerLocations.getOrDefault(player, SkyblockLocation.NONE);
@@ -73,6 +72,6 @@ public class LocationManager {
     
     
     public void locationMessage(Player player, String message) {
-    player.sendMessage("§7   ⬛ §f" + message);
+    player.sendMessage("§7   ◼️ §f" + message);
     }
 }

@@ -41,7 +41,7 @@ public class InventoryClick implements Listener {
           
        }
        
-       if (e.getCurrentItem().getItemMeta().getDisplayName() != " " || e.getCurrentItem().getItemMeta().getDisplayName() != "" || e.getCurrentItem().getItemMeta().getDisplayName() != null || e.getCurrentItem().getItemMeta().getDisplayName() != "§cClose") {
+       if (e.getCurrentItem().getItemMeta().getDisplayName() != " " || e.getCurrentItem().getItemMeta().getDisplayName() != null || e.getCurrentItem().getItemMeta().getDisplayName() != "§cClose") {
        
      new BukkitRunnable(){
 
@@ -62,7 +62,7 @@ public class InventoryClick implements Listener {
         }.runTaskAsynchronously((Plugin)SkyblockGame.getPlugin(SkyblockGame.class));
     
       user.debug("You clicked on " + e.getCurrentItem().getItemMeta().getDisplayName());
-      }
+     }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

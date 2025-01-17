@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.text.NumberFormat;
-import java.util.Random;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.List;
 public class SUtil {
 	private static SkyblockGame plugin = SkyblockGame.getPlugin(SkyblockGame.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yy");
-	private String megaServer;
 	private static final NumberFormat COMMA_FORMAT = NumberFormat.getInstance();
 	static
     {
@@ -35,27 +33,6 @@ public class SUtil {
     public static String commaify(long l)
     {
         return COMMA_FORMAT.format(l);
-    }
-    
-    public static String megaServer() {
-        Random random = new Random();
-
-        int num1 = random.nextInt(10); 
-        int num2 = random.nextInt(10); 
-        char charOrNum = (random.nextBoolean())
-            ? (char) ('0' + random.nextInt(10)) 
-            : (char) ('A' + random.nextInt(26)); 
-        char letter = (char) ('A' + random.nextInt(26));
-
-        return "m" + num1 + num2 + charOrNum + letter;
-    }
-    
-    public void genbruv() {
-        this.megaServer = megaServer();
-    }
-
-    public String getMegaServer() {
-        return megaServer;
     }
     
     public static String getFormattedNumber(double num, int iteration) {

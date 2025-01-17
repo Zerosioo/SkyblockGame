@@ -4,7 +4,7 @@ public enum PlayerRank {
 
     DEFAULT("§7", "", 1),
     VIP("§a", "VIP", 2),
-    VIP_PLUS("§a", "VIP§6+", 3),
+    VIPPLUS("§a", "VIP§6+", 3),
     MVP("§b", "MVP", 4),
     MVPPLUS("§b", "MVP§c+", 5),
     MVPPLUSPLUS("§6", "MVP§c++", 6),
@@ -12,7 +12,7 @@ public enum PlayerRank {
     HELPER("§9", "HELPER", 8),
     MOD("§2", "MOD", 9),
     GAMEMASTER("§2", "GM", 10),
-    BETATESTER("§d", "BT", 11),
+    BETATESTER("§d", "BETATEST", 11),
     ADMIN("§c", "ADMIN", 12),
     COOWNER("§c", "COOWNER", 13),
     JERRY("§d", "JERRY§c++", 14),

@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 
 import lombok.Getter;
 import me.zero.skyblock.user.Config;
+import me.zero.skyblock.util.SkyBlockLogger;
 
 public class SkyblockGame extends JavaPlugin {
     @Getter
@@ -22,18 +23,18 @@ public class SkyblockGame extends JavaPlugin {
             new Loader(this).load();
 
         // Launch message
-        getLogger().info(ChatColor.GREEN + "------------------------------------");
-        getLogger().info(ChatColor.GREEN + "SkyblockGame Core plugin has been enabled!");
-        getLogger().info(ChatColor.GREEN + "Author: Zero2Sixty2");
-        getLogger().info(ChatColor.GREEN + "------------------------------------");
+        SkyBlockLogger.sendMessage("&a------------------------------------");
+        SkyBlockLogger.sendMessage("&aSkyblockGame Core plugin has been enabled!");
+        SkyBlockLogger.sendMessage("&aAuthor: Zero2Sixty2");
+        SkyBlockLogger.sendMessage("&a------------------------------------");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info(ChatColor.RED + "-------------------------------------");
-        getLogger().info(ChatColor.RED + "SkyblockGame Core plugin has been disabled!");
-        getLogger().info(ChatColor.RED + "Author: Zero2Sixty2");
-        getLogger().info(ChatColor.RED + "-------------------------------------");
+        SkyBlockLogger.sendMessage("&c-------------------------------------");
+        SkyBlockLogger.sendMessage("&cSkyblockGame Core plugin has been disabled!");
+        SkyBlockLogger.sendMessage("&cAuthor: Zero2Sixty2");
+        SkyBlockLogger.sendMessage("&c-------------------------------------");
         
         new Loader(this).deload();
     }

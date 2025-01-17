@@ -17,7 +17,6 @@ import me.zero.skyblock.npcs.custom.*;
 import me.zero.skyblock.user.*;
 import me.zero.skyblock.util.*;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
@@ -26,7 +25,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import java.lang.reflect.InvocationTargetException;
@@ -47,7 +45,6 @@ public class Loader {
     @Getter
     private static NPCRegistry npcRegistry;
     private final LocationManager locationManager;
-    private SidebarManager sidebarManager;
 
     public Loader(SkyblockGame plugin) {
         this.plugin = plugin;
@@ -55,64 +52,47 @@ public class Loader {
     }
 
     public void load() {
-        sidebarManager = new SidebarManager(SkyblockGame.getPlugin(SkyblockGame.class));
-
-
-        SkyBlockLogger.info("Initializing Mortar Library...");
+        SkyBlockLogger.sendMessage("&aInitializing Mortar Library...");
         mortar = MortarLibrary.link(plugin);
         npcRegistry = mortar.getNpcRegistry();
 
-        SkyBlockLogger.info("Disabling auto-save for protected worlds...");
+        SkyBlockLogger.sendMessage("&aDisabling auto-save for protected worlds...");
         disableWorldAutoSave();
 
-        SkyBlockLogger.info("Registering commands...");
+        SkyBlockLogger.sendMessage("&aRegistering commands...");
         registerCommands();
 
-        SkyBlockLogger.info("Loading configuration...");
+        SkyBlockLogger.sendMessage("&aLoading configuration...");
         plugin.loadConfig();
 
-        SkyBlockLogger.info("Registering events...");
+        SkyBlockLogger.sendMessage("&aRegistering events...");
         registerEvents();
 
-        SkyBlockLogger.info("Loading NPCs...");
+        SkyBlockLogger.sendMessage("&aLoading NPCs...");
         loadNPCs();
 
-        SkyBlockLogger.info("Initializing game rules...");
+        SkyBlockLogger.sendMessage("&aInitializing game rules...");
         initializeGameRules();
-        
-        SkyBlockLogger.info("initializing Scoreboard");
-        startScoreboardUpdater();
 
-        SkyBlockLogger.info("Plugin successfully loaded!");
+        SkyBlockLogger.sendMessage("&aPlugin successfully loaded!");
     }
     
     public void deload() {
     	
-    	SkyBlockLogger.info("Disabling Worlds & stuff.");
+    	SkyBlockLogger.warn("Disabling Worlds & stuff.");
     	
 
         npcRegistry = null;
         mortar = null;
 
 
-        SkyBlockLogger.info("Saving user data...");
+        SkyBlockLogger.sendMessage("&aSaving user data...");
 
         for (User user : User.getCachedUsers())
             user.save();
 
         disableWorldAutoSave();
     	
-    }
-    
-    private void startScoreboardUpdater() {
-    new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    sidebarManager.updateScoreboard(player);
-                }
-            }
-        }.runTaskTimer(SkyblockGame.getPlugin(SkyblockGame.class), 0L, 20L); 
     }
 
     private void disableWorldAutoSave() {
@@ -134,7 +114,7 @@ public class Loader {
                 throw new RuntimeException(e);
             }
         }
-        SkyBlockLogger.info("Successfully registered " + registered + " commands.");
+        SkyBlockLogger.sendMessage("&aSuccessfully registered " + registered + " commands.");
     }
 
     private void registerEvents() {
@@ -180,7 +160,7 @@ public class Loader {
         // The End
         npcRegistry.register(new Tyzzo(), false);
         
-        // Custom Npcs
+        // Custom
         npcRegistry.register(new Zero(), false);
         
         npcRegistry.startTasks();

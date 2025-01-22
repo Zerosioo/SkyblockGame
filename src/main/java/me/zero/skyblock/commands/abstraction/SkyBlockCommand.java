@@ -59,12 +59,12 @@ public abstract class SkyBlockCommand implements CommandExecutor {
             sendDiscordStaffNotification(sender.getName(), cmd.toString());
         }
         
-        if (commandParameters.rank().isAboveOrEqual(PlayerRank.ADMIN)) {
+        if (commandParameters.rank().isAboveOrEqual(PlayerRank.ADMIN) && crank.isAboveOrEqual(PlayerRank.ADMIN)) {
             sendDiscordAdminNotification(sender.getName(), cmd.toString());
         }
         
         if ((commandParameters.requireOperator() && !sender.isOp())) {
-            sender.sendMessage("§cYou need §aOPERATOR §cto use this command!");
+            sender.sendMessage("§cYou need §eOPERATOR §cto use this command!");
             return true;
         }
 

@@ -25,6 +25,7 @@ public class User
     private UUID uuid;
     private final Config config;
     private long coins;
+    private long bits;
     private long bankCoins;
     public PlayerRank rank;
     private int skyblocklevel;
@@ -37,6 +38,7 @@ public class User
     {
         this.uuid = uuid;
         this.coins = 0;
+        this.bits = 0;
         this.bankCoins = 0;
         this.skyblocklevel = 0;
         this.skyblockxp = 0;
@@ -71,6 +73,7 @@ public class User
 
         this.uuid = UUID.fromString(config.getString("uuid"));
         this.coins = config.getLong("coins");
+        this.bits = config.getLong("bits");
         this.bankCoins = config.getLong("bankCoins");
         this.rank = PlayerRank.valueOf(this.config.getString("rank"));
         this.skyblocklevel = config.getInt("skyblocklevel");
@@ -91,6 +94,7 @@ public class User
     {
         config.set("uuid", uuid.toString());
         config.set("coins", coins);
+        config.set("bits", bits);
         config.set("bankCoins", bankCoins);
         config.set("skyblocklevel", skyblocklevel);
         config.set("skyblockxp", skyblockxp);
@@ -135,10 +139,38 @@ public class User
         this.coins = coins;
     }
     
+    public void addCoins(long coins) {
+        this.coins += coins;
+    }
+    public void subCoins(long coins) {
+        this.coins -= coins;
+    }
+    public void addBankCoins(long bankCoins) {
+        this.bankCoins += bankCoins;
+    }
+    public void subBankCoins(long bankCoins) {
+        this.bankCoins -= bankCoins;
+    }
+    
+    public long getBits() {
+    return bits;
+    }
+    
+    public void setBits(long bits) {
+    	this.bits = bits;
+    }
+    
+    public void addBits(long bits) {
+        this.bits += bits;
+    }
+
+    public void subBits(long bits) {
+        this.bits -= bits;
+    }
 
     public void setRank(PlayerRank rank) {
         this.rank = rank;
-        giftedranks++;
+        this.giftedranks += 1;
         Player player = Bukkit.getPlayer(uuid);
         String colour = rank.getColour();
         String levelPrefix = LevelPrefix();
@@ -156,7 +188,6 @@ public class User
         team.setPrefix(levelPrefix + " " + colour);
         team.addEntry(player.getName());
         player.setScoreboard(scoreboard);
-        save();
     }
 
     public PlayerRank getRank() {

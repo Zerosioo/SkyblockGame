@@ -23,18 +23,18 @@ public class SkyblockGame extends JavaPlugin {
             new Loader(this).load();
 
         // Launch message
-        SkyBlockLogger.sendMessage("&a------------------------------------");
+        SkyBlockLogger.sendMessage("&a&m------------------------------------");
         SkyBlockLogger.sendMessage("&aSkyblockGame Core plugin has been enabled!");
         SkyBlockLogger.sendMessage("&aAuthor: Zero2Sixty2");
-        SkyBlockLogger.sendMessage("&a------------------------------------");
+        SkyBlockLogger.sendMessage("&a&m------------------------------------");
     }
 
     @Override
     public void onDisable() {
-        SkyBlockLogger.sendMessage("&c-------------------------------------");
+        SkyBlockLogger.sendMessage("&c&m-------------------------------------");
         SkyBlockLogger.sendMessage("&cSkyblockGame Core plugin has been disabled!");
         SkyBlockLogger.sendMessage("&cAuthor: Zero2Sixty2");
-        SkyBlockLogger.sendMessage("&c-------------------------------------");
+        SkyBlockLogger.sendMessage("&c&m-------------------------------------");
         
         new Loader(this).deload();
     }

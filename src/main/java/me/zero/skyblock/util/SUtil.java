@@ -57,16 +57,18 @@ public class SUtil {
     {
         double percent = Math.min(current, max) / max;
         long completed = Math.round((double) length * percent);
-        StringBuilder builder = new StringBuilder().append(progressColor);
+        StringBuilder builder = new StringBuilder().append(progressColor + "" + ChatColor.STRIKETHROUGH);
         for (int i = 0; i < completed; i++)
             builder.append("-");
-        builder.append(ChatColor.WHITE);
+        builder.append(ChatColor.WHITE + "" + ChatColor.STRIKETHROUGH);
         for (int i = 0; i < length - completed; i++)
             builder.append("-");
-        builder.append(" ").append(ChatColor.YELLOW).append(SUtil.commaify(current)).append(ChatColor.GOLD).append("/")
-                .append(ChatColor.YELLOW).append(SUtil.commaify(max));
+        builder.append(" ").append(ChatColor.AQUA).append(SUtil.commaify(current)).append(ChatColor.AQUA).append("/")
+                .append(ChatColor.AQUA).append(SUtil.commaify(max));
         return builder.toString();
     }
+    
+
 
         public static void runAsync(Runnable runnable)     {
         new Thread(runnable).start();

@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import me.zero.skyblock.user.User;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Base64;
@@ -37,8 +39,12 @@ public abstract class GUI implements InventoryHolder {
 
     public void open(Player player) {
         this.player = player;
+        User user = User.getUser(player.getUniqueId());
+        user.debug("§eCreating inventory: §8" + getTitle());
         inventory = Bukkit.createInventory(this, getSize(), getTitle());
+        user.debug("§aSuccessfully created inventory: §8" + getTitle());
         this.setItems();
+        user.debug("§aSucessfully set items for inventory: §8" + getTitle());
         player.openInventory(inventory);
     }
 

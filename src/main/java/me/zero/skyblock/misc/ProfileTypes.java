@@ -14,18 +14,10 @@ public class ProfileTypes {
             "Broccoli", "Cauliflower", "Spinach", "Asparagus"
     };
 
-    /**
-     * Returns a random profile name from the predefined list.
-     * @return A random profile name.
-     */
     public static String getRandomProfileName() {
         return PROFILE_NAMES[new Random().nextInt(PROFILE_NAMES.length)];
     }
-
-    /**
-     * Generates a random UUID.
-     * @return A random UUID.
-     */
+    
     public static UUID getRandomProfileID() {
         return UUID.randomUUID();
     }

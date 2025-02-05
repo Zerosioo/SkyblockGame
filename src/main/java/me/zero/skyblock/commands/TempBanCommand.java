@@ -17,6 +17,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import me.zero.skyblock.Configuration;
 import me.zero.skyblock.commands.abstraction.*;
 import me.zero.skyblock.ranks.PlayerRank;
 
@@ -80,7 +81,7 @@ public class TempBanCommand extends SkyBlockCommand {
 							playerData.save(playerfile);
 							if (target != null) {
 								player.sendMessage("§aTempbanned " + Bukkit.getPlayer(args[0]).getName() + " for " + args[1] + " for " + reason);
-								target.kickPlayer("§cYou are temporarily banned for §f" + calculateTime((long)playerData.getInt(uuid + ".ban.length") - unixTime) + " §cfrom this server!\n\n" + "§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + ((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getConfig().getString("bandomain") + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
+								target.kickPlayer("§cYou are temporarily banned for §f" + calculateTime((long)playerData.getInt(uuid + ".ban.length") - unixTime) + " §cfrom this server!\n\n" + "§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + Configuration.BAN_DOMAIN + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
 							} else {
 								player.sendMessage("§aTempbanned " + args[0] + " for " + args[1] + " for " + reason);
 							}

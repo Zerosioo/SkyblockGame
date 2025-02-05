@@ -42,7 +42,7 @@ public class LocationManager {
             Sounds.NEW_ZONE.play(player);
             player.sendMessage("");
             player.sendMessage(" §6§lNEW AREA DISCOVERED!");
-            player.sendMessage("§7  ⏣ " + newLocation.getName().toUpperCase());
+            player.sendMessage("§7  ⏣ " + newLocation.getName());
             player.sendMessage("");
             
          if (getPlayerLocation(player) == SkyblockLocation.VILLAGE) {
@@ -72,6 +72,6 @@ public class LocationManager {
     
     
     public void locationMessage(Player player, String message) {
-    player.sendMessage("§7   ◼️ §f" + message);
+    player.sendMessage("\u00a77   \u2b1b \u00a7f%s" + message);
     }
 }

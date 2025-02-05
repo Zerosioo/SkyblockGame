@@ -18,6 +18,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import me.zero.skyblock.Configuration;
 import me.zero.skyblock.commands.abstraction.*;
 import me.zero.skyblock.ranks.PlayerRank;
 
@@ -87,7 +88,7 @@ public class MuteCommand extends SkyBlockCommand {
 								target.sendMessage("§cYou are currently muted for " + reason + ".");
 								target.sendMessage("§7Your mute will expire in §c" + calculateTime((long)playerData.getInt(uuid + ".mute.length") - unixTime));
 								target.sendMessage("");
-								target.sendMessage("§7Find out more here: §e" + ((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getConfig().getString("mutedomain"));
+								target.sendMessage("§7Find out more here: §e" + Configuration.MUTE_DOMAIN);
 								target.sendMessage("§7Mute ID: §f#" + playerData.getString(uuid + ".mute.id"));
 								target.sendMessage("§c§l§m---------------------------------------------");
 							} else {

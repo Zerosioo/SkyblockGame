@@ -6,6 +6,8 @@ import me.zero.mortar.npc.NPCMeta;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import java.util.Arrays;
+
+import me.zero.skyblock.Configuration;
 import me.zero.skyblock.inventory.GUI;
 
 public class Salesman extends MortarNPC {
@@ -66,7 +68,7 @@ public class Salesman extends MortarNPC {
       
       speak(event.getPlayer(), Arrays.asList(
                 "§fThank you for supporting the server and allowing us to maintain SkyBlock!",
-                "§fIf you want to support us, head over to the SkyblockGame Store at §bstore.SkyblockGame.net"
+                "§fIf you want to support us, head over to the " + Configuration.SERVER_NAME + " Store at §bstore.SkyblockGame.net"
                 
         ));
       

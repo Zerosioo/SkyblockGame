@@ -56,14 +56,11 @@ public class Loader {
         mortar = MortarLibrary.link(plugin);
         npcRegistry = mortar.getNpcRegistry();
 
-        SkyBlockLogger.sendMessage("&aDisabling auto-save for protected worlds...");
+        SkyBlockLogger.sendMessage("&eDisabling auto-save for protected worlds...");
         disableWorldAutoSave();
 
         SkyBlockLogger.sendMessage("&aRegistering commands...");
         registerCommands();
-
-        SkyBlockLogger.sendMessage("&aLoading configuration...");
-        plugin.loadConfig();
 
         SkyBlockLogger.sendMessage("&aRegistering events...");
         registerEvents();
@@ -79,7 +76,7 @@ public class Loader {
     
     public void deload() {
     	
-    	SkyBlockLogger.warn("Disabling Worlds & stuff.");
+    	SkyBlockLogger.info("&eDisabling Worlds & stuff.");
     	
 
         npcRegistry = null;
@@ -121,11 +118,10 @@ public class Loader {
         Set<Listener> listeners = new HashSet<>();
         listeners.add(new InventoryClick());
         listeners.add(new PlayerListener());
-        listeners.add(new PlayerChatListener());
         listeners.add(new WorldListener());
-        listeners.add(new ChatListener());
         listeners.add(new JoinLeaveEvent());
         listeners.add(new PlayerChat());
+        listeners.add(new ServerPingListener());
         listeners.add(new LocationListener(locationManager));
 
         listeners.forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, plugin));

@@ -4,7 +4,7 @@ public enum PlayerRank {
 
     DEFAULT("§7", "", 1),
     VIP("§a", "VIP", 2),
-    VIPPLUS("§a", "VIP§6+", 3),
+    VIPPLUS("§a", "VIP§c+", 3),
     MVP("§b", "MVP", 4),
     MVPPLUS("§b", "MVP§c+", 5),
     MVPPLUSPLUS("§6", "MVP§c++", 6),

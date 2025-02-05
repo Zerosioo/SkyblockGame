@@ -9,6 +9,7 @@ import me.zero.skyblock.inventory.inventories.skyblockmenu.SkyblockMenu;
 import me.zero.skyblock.ranks.PlayerRank;
 
 @CommandParameters(
+aliases = {"sbm"},
 description = "Opens skyblock menu", 
 usages = "§cUsage: /skyblockmenu",
 rank = PlayerRank.ADMIN)

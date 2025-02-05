@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import me.zero.skyblock.Configuration;
 import me.zero.skyblock.commands.abstraction.*;
 import me.zero.skyblock.ranks.PlayerRank;
 import me.zero.skyblock.main.SkyblockGame;
@@ -29,7 +30,7 @@ public class KickCommand extends SkyBlockCommand {
                                 }
 
                                 player.sendMessage("§aKicked player " + Bukkit.getPlayer(args[0]).getName() + " for " + reason);
-                                target.kickPlayer("§cYou have been kicked!\n\n§7Reason: §f" + reason + "\n" + "§7Find out more: §b§n" + ((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getConfig().getString("kickdomain"));
+                                target.kickPlayer("§cYou have been kicked!\n\n§7Reason: §f" + reason + "\n" + "§7Find out more: §b§n" + Configuration.KICK_DOMAIN);
                         } else {
                                 player.sendMessage("§cInvalid syntax. Correct: /kick <name> <reason>");
          }

@@ -10,6 +10,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import me.zero.skyblock.Configuration;
 import me.zero.skyblock.commands.abstraction.*;
 import me.zero.skyblock.ranks.PlayerRank;
 import me.zero.skyblock.main.SkyblockGame;
@@ -70,7 +71,7 @@ public class BanCommand extends SkyBlockCommand {
 
 							if (target != null) {
 								player.sendMessage("§aPermanently banned " + Bukkit.getPlayer(args[0]).getName() + " for " + reason);
-								target.getPlayer().kickPlayer("§cYou are permanently banned from this server!\n\n§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + ((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getConfig().getString("bandomain") + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
+								target.getPlayer().kickPlayer("§cYou are permanently banned from this server!\n\n§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + Configuration.MUTE_DOMAIN + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
 							}
 						} catch (IOException var12) {
 							var12.printStackTrace();

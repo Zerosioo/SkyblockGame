@@ -17,7 +17,7 @@ public class SkyblockGame extends JavaPlugin {
     @Override
     public void onEnable() {
             
-            
+            saveDefaultConfig();
             plugin = this;
             instance = this;
             new Loader(this).load();
@@ -37,11 +37,6 @@ public class SkyblockGame extends JavaPlugin {
         SkyBlockLogger.sendMessage("&c&m-------------------------------------");
         
         new Loader(this).deload();
-    }
-
-    public void loadConfig() {
-        this.getConfig().options().copyDefaults(true);
-        this.saveConfig();
     }
 
     public static SkyblockGame getInstance() {

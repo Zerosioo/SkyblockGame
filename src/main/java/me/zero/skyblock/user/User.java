@@ -188,6 +188,7 @@ public class User
         team.setPrefix(levelPrefix + " " + colour);
         team.addEntry(player.getName());
         player.setScoreboard(scoreboard);
+        save();
     }
 
     public PlayerRank getRank() {
@@ -308,5 +309,10 @@ public class User
     	if (booleanHandler.getBoolean("debug") == true) {
     	player.sendMessage("§9[DEBUG] §f" + message);
     	}
+    }
+    
+    public void sendMessage(String message) {
+    	Player player = Bukkit.getPlayer(uuid);
+    	player.sendMessage(message);
     }
 }

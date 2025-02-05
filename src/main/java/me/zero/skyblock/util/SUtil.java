@@ -63,7 +63,7 @@ public class SUtil {
         builder.append(ChatColor.WHITE + "" + ChatColor.STRIKETHROUGH);
         for (int i = 0; i < length - completed; i++)
             builder.append("-");
-        builder.append(" ").append(ChatColor.AQUA).append(SUtil.commaify(current)).append(ChatColor.AQUA).append("/")
+        builder.append(" ").append(ChatColor.AQUA).append(" " + SUtil.commaify(current)).append(ChatColor.AQUA).append("/")
                 .append(ChatColor.AQUA).append(SUtil.commaify(max));
         return builder.toString();
     }

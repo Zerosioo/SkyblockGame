@@ -1,6 +1,7 @@
 package me.zero.skyblock.listeners;
 
 import me.zero.skyblock.main.SkyblockGame;
+import me.zero.skyblock.Configuration;
 import me.zero.skyblock.commands.GodModeCommand;
 import java.io.File;
 import java.io.IOException;
@@ -28,11 +29,9 @@ public class JoinLeaveEvent implements Listener {
 	
 	@EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
-        // Check if the damaged entity is a player
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            // Cancel damage if the player has god mode enabled
             if (GodModeCommand.isGodModeEnabled(player.getName())) {
                 event.setCancelled(true);
             }
@@ -60,13 +59,13 @@ public class JoinLeaveEvent implements Listener {
 
 			event.setJoinMessage((String)null);
 			if (playerData.getInt(uuid + ".ban.length") == -1) {
-            event.getPlayer().kickPlayer("§cYou are permanently banned from this server!\n\n§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + ((SkyblockGame)SkyblockGame.getPlugin(SkyblockGame.class)).getConfig().getString("bandomain") + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
+            event.getPlayer().kickPlayer("§cYou are permanently banned from this server!\n\n§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + Configuration.BAN_DOMAIN + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
 			} else {
 				if (playerData.getInt(uuid + ".ban.length") == 0) {
 					return;
 				}
 
-				event.getPlayer().kickPlayer("§cYou are temporarily banned for §f" + calculateTime((long)playerData.getInt(uuid + ".ban.length") - unixTime) + " §cfrom this server!\n\n" + "§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§nhttps://www.SkyblockGame.net/appeal" + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
+				event.getPlayer().kickPlayer("§cYou are temporarily banned for §f" + calculateTime((long)playerData.getInt(uuid + ".ban.length") - unixTime) + " §cfrom this server!\n\n" + "§7Reason: §f" + playerData.getString(uuid + ".ban.reason") + "\n" + "§7Find out more: §b§n" + Configuration.BAN_DOMAIN + "\n\n" + "§7Ban ID: §f#" + playerData.getString(uuid + ".ban.id") + "\n" + "§7Sharing your Ban ID may affect the processing of your appeal!");
 			}
 		}
 

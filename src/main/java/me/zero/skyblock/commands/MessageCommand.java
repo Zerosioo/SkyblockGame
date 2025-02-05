@@ -2,6 +2,7 @@ package me.zero.skyblock.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -14,7 +15,8 @@ import me.zero.skyblock.user.User;
 @CommandParameters(
 aliases = {"msg"},
 description = "Message a player", 
-usages = "§cUsage: /msg <player> <message>")
+usages = "§cUsage: /msg <player> <message>",
+rank = PlayerRank.DEFAULT)
 public class MessageCommand extends SkyBlockCommand {
 
     @Override
@@ -43,7 +45,7 @@ public class MessageCommand extends SkyBlockCommand {
         User tuser = User.getUser(target.getUniqueId());
         User puser = User.getUser(player.getUniqueId());
         
-        TextComponent receivedMessage = new TextComponent(ChatColor.LIGHT_PURPLE + "From " + puser.getRank().getPrefix() + target.getName() + ChatColor.LIGHT_PURPLE + " to Me" + "§7: " + ChatColor.WHITE + message);
+        TextComponent receivedMessage = new TextComponent(ChatColor.LIGHT_PURPLE + "From " + puser.getRank().getPrefix() + ((HumanEntity) puser).getName() + ChatColor.LIGHT_PURPLE + " to Me" + "§7: " + ChatColor.WHITE + message);
         receivedMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + player.getName() + " "));
         receivedMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§eClick to reply").create()));
 
@@ -53,7 +55,7 @@ public class MessageCommand extends SkyBlockCommand {
         // Create the clickable message for the sender
         
         
-        TextComponent sentMessage = new TextComponent(ChatColor.LIGHT_PURPLE + "From Me to " + tuser.getRank().getPrefix() + player.getName() + "§7: " + ChatColor.WHITE + message);
+        TextComponent sentMessage = new TextComponent(ChatColor.LIGHT_PURPLE + "From Me to " + tuser.getRank().getPrefix() + ((HumanEntity) tuser).getName() + "§7: " + ChatColor.WHITE + message);
         sentMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + target.getName() + " "));
         sentMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§eClick to message").create()));
 

@@ -110,9 +110,9 @@ public class PlayerListener implements Listener {
     player.sendMessage("");
     	
     
-    }
-            }
-        
+           }
+       }
+    
     }
     
    @EventHandler

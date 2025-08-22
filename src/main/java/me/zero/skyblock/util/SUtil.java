@@ -2,9 +2,13 @@ package me.zero.skyblock.util;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import me.zero.skyblock.main.SkyblockGame;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -120,4 +124,50 @@ public class SUtil {
     {
         return l > 9 ? "" + l : "0" + l;
     }
+    
+    public static String getId(ItemStack item) {
+		String id = null;
+			
+		if(item != null && item.getType() != Material.AIR) {
+			net.minecraft.server.v1_8_R3.ItemStack stack = CraftItemStack.asNMSCopy(item);
+			if(stack.getTag() != null) {
+				id = stack.getTag().getCompound("ExtraAttributes").getString("id");
+			}
+			if(id == null || id.isEmpty()) {
+				if(item.getType() == Material.STAINED_GLASS_PANE && item.getDurability() == 15) {
+					return null;
+				}
+				id = item.getType().toString();
+				if(item.getDurability() != 0) {
+					id+= "-" + item.getDurability();
+				}
+			}
+			return id;
+		}
+		return null;
+	}
+	
+	public static NBTTagCompound getCompound(net.minecraft.server.v1_8_R3.ItemStack nmsStack) {
+		if(nmsStack == null ) return null;
+		NBTTagCompound compound;
+		if (nmsStack.getTag() == null || nmsStack.getTag().isEmpty()) {
+			compound = new NBTTagCompound();
+			nmsStack.setTag(compound);
+		}
+		else
+		{
+		compound = nmsStack.getTag();
+		}
+		NBTTagCompound attributes;
+		if (compound.getCompound("ExtraAttributes").isEmpty()) {
+			attributes = new NBTTagCompound();
+			compound.set("ExtraAttributes", attributes);
+		}
+		else
+		{
+		attributes = compound.getCompound("ExtraAttributes");
+		}
+		return attributes;
+	}
+	
 }

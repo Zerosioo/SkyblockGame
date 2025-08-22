@@ -27,25 +27,25 @@ public class ServerPingListener extends PListener
         FileConfiguration config = SkyblockGame.getInstance().getConfig();
         
         if (config.getBoolean("Maintenance")) {
-        e.setMotd("            §aHyblixel Network §c[1.8-1.17]§r\n       §c§lSERVER UNDER MAINTENANCE");
+        e.setMotd("            §aZero's Network §c[1.8-1.17]§r\n       §c§lSERVER UNDER MAINTENANCE");
         e.setMaxPlayers(1);
         try {
                 Field versionNameField = e.getClass().getDeclaredField("serverName");
                 versionNameField.setAccessible(true);
                 versionNameField.set(e, ChatColor.RED + "Maintenance");
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignored) {
+                
             }
         }
         
-        else { e.setMotd("        §aHyblixel Network §c[1.8-1.17]§r\n       §c§lWORK UNDER PROGRESS."); 
+        else { e.setMotd("        §aZero's Network §c[1.8-1.17]§r\n       §c§lWORK UNDER PROGRESS."); 
         e.setMaxPlayers(100);
         try {
                 Field versionNameField = e.getClass().getDeclaredField("serverName");
                 versionNameField.setAccessible(true);
-                versionNameField.set(e, ChatColor.RED + "§cHyblixel Network [1.8-1.20]");
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                versionNameField.set(e, ChatColor.RED + "§cZero's' Network [1.8-1.20]");
+            } catch (Exception ignored) {
+                
             }
         }
     }
@@ -73,7 +73,7 @@ public class ServerPingListener extends PListener
       
             webhook.addEmbed(embed);
             
-          // webhook.setContent("**" + player.getName() + "** tried to join but was restricted access because of maintenance." + "IP Address:**" + Bukkit.getIp() + "** Port:**" + Bukkit.getPort() + "**");
+          webhook.setContent("**" + player.getName() + "** tried to join but was restricted access because of maintenance." + "IP Address:**" + Bukkit.getIp() + "** Port:**" + Bukkit.getPort() + "**");
            
                 try {
                     webhook.execute();

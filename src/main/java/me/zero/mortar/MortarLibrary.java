@@ -1,17 +1,12 @@
 package me.zero.mortar;
 
-import lombok.Getter;
-
 import me.zero.mortar.npc.NPCRegistry;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MortarLibrary {
-    @Getter
     private static MortarLibrary library;
 
-    @Getter
     private JavaPlugin plugin;
-    @Getter
     private NPCRegistry npcRegistry;
 
     public static MortarLibrary link(JavaPlugin plugin) {
@@ -25,6 +20,16 @@ public class MortarLibrary {
 
         return lib;
     }
-
-
+    
+    public static MortarLibrary getLibrary() {
+    	return library;
+    }
+    
+    public JavaPlugin getPlugin() {
+    	return plugin;
+    }
+    
+    public NPCRegistry getNpcRegistry() {
+    	return npcRegistry;
+    }
 }

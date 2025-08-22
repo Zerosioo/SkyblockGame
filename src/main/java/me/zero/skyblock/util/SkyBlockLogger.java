@@ -21,6 +21,10 @@ public class SkyBlockLogger {
     public static void sendMessage(String message) {
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.translateAlternateColorCodes('&', message));
     }
+    
+    public static void print(String m) {
+    	Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', m));
+    }
 
     public static void info(final Object message) {
         int emoji = 0x1F5E3;

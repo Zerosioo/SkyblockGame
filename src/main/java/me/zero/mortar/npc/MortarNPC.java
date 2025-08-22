@@ -1,27 +1,8 @@
-/*
- * Copyright (C) 2023 by Ruby Game Studios
- * Mortar is apart of Skyblock, which is licensed under the Creative Commons Non-Commercial 4.0 International License.
- *
- * You may not use this software for commercial use, however you are free
- * to modify, copy, redistribute, or build upon our codebase. You must give
- * appropriate credit, provide a link to the license, and indicate
- * if changes were made.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, visit https://creativecommons.org/licenses/by-nc/4.0/legalcode
- */
 package me.zero.mortar.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 
 import net.minecraft.server.v1_8_R3.*;
@@ -45,264 +26,352 @@ import java.util.*;
 
 @SuppressWarnings({"unused", "FieldMayBeFinal", "FieldCanBeLocal"})
 public abstract class MortarNPC {
-    private static Map<UUID, HashMap<Integer, Hologram>> HOLOGRAMS = new HashMap<>();
-
-    private List<PacketPlayOutSpawnEntityLiving> SHOW_PACKETS = new ArrayList<>();
-    private List<PacketPlayOutEntityDestroy> HIDE_PACKETS = new ArrayList<>();
-    private List<Object> META_PACKETS = new ArrayList<>();
-    private PacketPlayOutNamedEntitySpawn spawnPacket;
-
-    @Getter
-    private NPCMeta meta;
-    private int entityId;
-    @Getter
-    private Location location;
-    private GameProfile gameProfile;
-    private String texture;
-    private String signature;
-
-    private List<Player> ALREADY_SPAWNED = new ArrayList<>();
-    private List<Player> ALREADY_DESPAWNED = new ArrayList<>();
-    private List<Player> ALREADY_SPEAKING = new ArrayList<>();
-
-    public MortarNPC(NPCMeta meta) {
-        this.meta = meta;
-
-        entityId = meta.getId() + 5000;
-        gameProfile = new GameProfile(UUID.randomUUID(), MortarUtils.color("&e&lCLICK"));
-        texture = meta.getTexture();
-        signature = meta.getSignature();
-        location = new Location(Bukkit.getWorld(meta.getWorldName()), meta.getX(), meta.getY(), meta.getZ(), meta.getYaw(), meta.getPitch());
-    }
-
-    public void load() {
-        PacketPlayOutNamedEntitySpawn packet = new PacketPlayOutNamedEntitySpawn();
+	private static Map<UUID, HashMap<Integer, Hologram>> HOLOGRAMS = new HashMap<>();
 
-        set(packet, "a", entityId);
-        set(packet, "b", gameProfile.getId());
+	private List<PacketPlayOutSpawnEntityLiving> SHOW_PACKETS = new ArrayList<>();
+	private List<PacketPlayOutEntityDestroy> HIDE_PACKETS = new ArrayList<>();
+	private List<Object> META_PACKETS = new ArrayList<>();
+	private PacketPlayOutNamedEntitySpawn spawnPacket;
 
-        set(packet, "c", getFixedLocation(location.getX()));
-        set(packet, "d", getFixedLocation(location.getY()));
-        set(packet, "e", getFixedLocation(location.getZ()));
+	private NPCMeta meta;
+	private int entityId;
+	private Location location;
+	private GameProfile gameProfile;
+	private String texture;
+	private String signature;
+	private boolean spawned = false;
 
-        set(packet, "f", getFixedRotation(location.getYaw()));
-        set(packet, "g", getFixedRotation(location.getPitch()));
+	private List<Player> ALREADY_SPAWNED = new ArrayList<>();
+	private List<Player> ALREADY_DESPAWNED = new ArrayList<>();
+	private List<Player> ALREADY_SPEAKING = new ArrayList<>();
 
-        set(packet, "h", 0);
+	public MortarNPC(NPCMeta meta) {
+		this.meta = meta;
 
-        DataWatcher watcher = new DataWatcher(null);
+		entityId = meta.getId() + 5000;
+		gameProfile = new GameProfile(UUID.randomUUID(), MortarUtils.color("&e&lCLICK"));
+		texture = meta.getTexture();
+		signature = meta.getSignature();
+		location = new Location(Bukkit.getWorld(meta.getWorldName()), meta.getX(), meta.getY(), meta.getZ(), meta.getYaw(), meta.getPitch());
+	}
 
-        watcher.a(6, 20.0F);
-        watcher.a(10, (byte) 127);
 
-        set(packet, "i", watcher);
 
-        gameProfile.getProperties().put("textures", new Property("textures", this.texture, this.signature));
-        spawnPacket = packet;
-    }
+	public boolean isSpawned() {
+		return spawned;
+	}
+	public void setSpawned(boolean spawned) {
+		this.spawned = spawned;
+	}
 
-    public void spawn() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            spawn(player);
-        }
-    }
 
-    public void spawn(Player player) {
-        if (ALREADY_SPAWNED.contains(player)) {
-            return;
-        }
+	public void registerForInteraction() {
+	MortarLibrary.getLibrary().getNpcRegistry().registerWithoutAuto(this);
 
-        if (spawnPacket == null) {
-            load();
-        }
+	}
 
-        addToTab(player);
-        send(spawnPacket, player);
+	public void enableInteraction() {
+		MortarLibrary.getLibrary().getNpcRegistry().registerWithoutAuto(this);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                removeFromTab(player);
-            }
-        }.runTaskLater(MortarLibrary.getLibrary().getPlugin(), 20);
+	}
 
-        Hologram hologram = new Hologram("NPC-" + UUID.randomUUID().toString().substring(0, 10), location.clone().add(0, 0.8, 0), meta.getHolograms());
-        HashMap<Integer, Hologram> playerHolograms = HOLOGRAMS.getOrDefault(player.getUniqueId(), new HashMap<>());
 
-        if (playerHolograms.containsKey(entityId)) {
-            playerHolograms.get(entityId).hide(player);
-        }
 
-        playerHolograms.put(entityId, hologram);
-        HOLOGRAMS.put(player.getUniqueId(), playerHolograms);
+	public void load() {
+		PacketPlayOutNamedEntitySpawn packet = new PacketPlayOutNamedEntitySpawn();
 
-        ALREADY_SPAWNED.add(player);
-        ALREADY_DESPAWNED.remove(player);
+		set(packet, "a", entityId);
+		set(packet, "b", gameProfile.getId());
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                hologram.show(player);
-            }
-        }.runTaskLater(MortarLibrary.getLibrary().getPlugin(), 10);
-    }
+		set(packet, "c", getFixedLocation(location.getX()));
+		set(packet, "d", getFixedLocation(location.getY()));
+		set(packet, "e", getFixedLocation(location.getZ()));
 
-    public void despawn(Player player) {
-        if (ALREADY_DESPAWNED.contains(player)) {
-            return;
-        }
+		set(packet, "f", getFixedRotation(location.getYaw()));
+		set(packet, "g", getFixedRotation(location.getPitch()));
 
-        removeFromTab(player);
+		set(packet, "h", 0);
 
-        PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(entityId);
-        send(packet, player);
+		DataWatcher watcher = new DataWatcher(null);
 
-        if (HOLOGRAMS.get(player.getUniqueId()) != null && HOLOGRAMS.get(player.getUniqueId()).containsKey(entityId)) {
-            HOLOGRAMS.get(player.getUniqueId()).get(entityId).hide(player);
-            HOLOGRAMS.get(player.getUniqueId()).remove(entityId);
-        }
+		watcher.a(6, 20.0F);
+		watcher.a(10, (byte) 127);
 
-        ALREADY_DESPAWNED.add(player);
-        ALREADY_SPAWNED.remove(player);
-    }
+		set(packet, "i", watcher);
 
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    private void addToTab(Player player) {
-        PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
+		gameProfile.getProperties().put("textures", new Property("textures", this.texture, this.signature));
+		spawnPacket = packet;
+	}
 
-        Field field = packet.getClass().getDeclaredField("b");
-        field.setAccessible(true);
+	public void spawn() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			spawn(player);
+		}
+	}
 
-        List<Object> players = (List<Object>) field.get(packet);
+	public void spawn(Player player) {
+		if (ALREADY_SPAWNED.contains(player)) {
+			return;
+		}
 
-        Constructor<?> constructor = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredConstructor(PacketPlayOutPlayerInfo.class, GameProfile.class, int.class, WorldSettings.EnumGamemode.class, IChatBaseComponent.class);
-        constructor.setAccessible(true);
+		if (spawnPacket == null) {
+			load();
+		}
 
-        PacketPlayOutPlayerInfo.PlayerInfoData data = (PacketPlayOutPlayerInfo.PlayerInfoData) constructor.newInstance(packet, gameProfile, 1, WorldSettings.EnumGamemode.NOT_SET, IChatBaseComponent.ChatSerializer.a(getMeta().getName()));
+		addToTab(player);
+		send(spawnPacket, player);
 
-        players.add(data);
-        field.set(packet, players);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				removeFromTab(player);
+			}
+		} .runTaskLater(MortarLibrary.getLibrary().getPlugin(), 20);
 
-        send(packet, player);
-    }
+		Hologram hologram = new Hologram("NPC-" + UUID.randomUUID().toString().substring(0, 10), location.clone().add(0, 0.8, 0), meta.getHolograms());
+		HashMap<Integer, Hologram> playerHolograms = HOLOGRAMS.getOrDefault(player.getUniqueId(), new HashMap<>());
 
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    private void removeFromTab(Player player) {
-        PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
+		if (playerHolograms.containsKey(entityId)) {
+			playerHolograms.get(entityId).hide(player);
+		}
 
-        Field field = packet.getClass().getDeclaredField("b");
-        field.setAccessible(true);
+		playerHolograms.put(entityId, hologram);
+		HOLOGRAMS.put(player.getUniqueId(), playerHolograms);
 
-        List<Object> players = (List<Object>) field.get(packet);
+		ALREADY_SPAWNED.add(player);
+		ALREADY_DESPAWNED.remove(player);
 
-        Constructor<?> constructor = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredConstructor(PacketPlayOutPlayerInfo.class, GameProfile.class, int.class, WorldSettings.EnumGamemode.class, IChatBaseComponent.class);
-        constructor.setAccessible(true);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				hologram.show(player);
+			}
+		} .runTaskLater(MortarLibrary.getLibrary().getPlugin(), 10);
 
-        PacketPlayOutPlayerInfo.PlayerInfoData data = (PacketPlayOutPlayerInfo.PlayerInfoData) constructor.newInstance(packet, gameProfile, 1, WorldSettings.EnumGamemode.NOT_SET, null);
+		setSpawned(true);
+	}
 
-        players.add(data);
-        field.set(packet, players);
+	public void despawn(Player player) {
+		if (ALREADY_DESPAWNED.contains(player)) {
+			return;
+		}
 
-        send(packet, player);
-    }
+		removeFromTab(player);
 
-    public void look(Player player) {
-        Location loc = location.setDirection(player.getLocation().subtract(location).toVector());
+		PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(entityId);
+		send(packet, player);
 
-        float yaw = loc.getYaw();
-        float pitch = loc.getPitch();
+		if (HOLOGRAMS.get(player.getUniqueId()) != null && HOLOGRAMS.get(player.getUniqueId()).containsKey(entityId)) {
+			HOLOGRAMS.get(player.getUniqueId()).get(entityId).hide(player);
+			HOLOGRAMS.get(player.getUniqueId()).remove(entityId);
+		}
 
-        PacketPlayOutEntity.PacketPlayOutEntityLook packet = new PacketPlayOutEntity.PacketPlayOutEntityLook(entityId, getFixedRotation(yaw), getFixedRotation(pitch), true);
-        PacketPlayOutEntityHeadRotation headPacket = new PacketPlayOutEntityHeadRotation();
+		ALREADY_DESPAWNED.add(player);
+		ALREADY_SPAWNED.remove(player);
 
-        set(headPacket, "a", entityId);
-        set(headPacket, "b", getFixedRotation(yaw));
+		if (ALREADY_SPAWNED.isEmpty()) {
+			setSpawned(false); 
+		}
+	}
 
-        send(packet, player);
-        send(headPacket, player);
-    }
+	@SneakyThrows
+	@SuppressWarnings("unchecked")
+	private void addToTab(Player player) {
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
 
-    public void onInteract(NPCInteractionEvent event) {}
+		Field field = packet.getClass().getDeclaredField("b");
+		field.setAccessible(true);
 
-    public void speak(Player player, List<String> messages) {
-        if (ALREADY_SPEAKING.contains(player)) {
-            return;
-        }
+		List<Object> players = (List<Object>) field.get(packet);
 
-        int total = 0;
+		Constructor<?> constructor = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredConstructor(PacketPlayOutPlayerInfo.class, GameProfile.class, int.class, WorldSettings.EnumGamemode.class,
+									 IChatBaseComponent.class);
+		constructor.setAccessible(true);
 
-        for (int i = 0; i < messages.size(); i++) {
-            String message = messages.get(i);
+		PacketPlayOutPlayerInfo.PlayerInfoData data = (PacketPlayOutPlayerInfo.PlayerInfoData) constructor.newInstance(packet, gameProfile, 1, WorldSettings.EnumGamemode.NOT_SET,
+				IChatBaseComponent.ChatSerializer.a(getMeta().getName()));
 
-            total += 1;
+		players.add(data);
+		field.set(packet, players);
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    speak(player, message, false);
-                }
-            }.runTaskLater(MortarLibrary.getLibrary().getPlugin(), i * 30L);
-        }
+		send(packet, player);
+	}
 
-        ALREADY_SPEAKING.add(player);
+	@SneakyThrows
+	@SuppressWarnings("unchecked")
+	private void removeFromTab(Player player) {
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                ALREADY_SPEAKING.remove(player);
-            }
-        }.runTaskLater(MortarLibrary.getLibrary().getPlugin(), total * 35L);
-    }
+		Field field = packet.getClass().getDeclaredField("b");
+		field.setAccessible(true);
 
-    public void speak(Player player, String message) {
-        speak(player, message, true);
-    }
+		List<Object> players = (List<Object>) field.get(packet);
 
-    public void speak(Player player, String message, boolean makeCd) {
-        NPCVoiceType voice = getMeta().getVoiceType();
+		Constructor<?> constructor = PacketPlayOutPlayerInfo.PlayerInfoData.class.getDeclaredConstructor(PacketPlayOutPlayerInfo.class, GameProfile.class, int.class, WorldSettings.EnumGamemode.class,
+									 IChatBaseComponent.class);
+		constructor.setAccessible(true);
 
-        player.playSound(player.getLocation(), Sound.VILLAGER_YES, 10, voice.getPitch());
-        player.sendMessage(MortarUtils.color("&e[NPC] " + getMeta().getDisplayName() + ": &f" + message));
+		PacketPlayOutPlayerInfo.PlayerInfoData data = (PacketPlayOutPlayerInfo.PlayerInfoData) constructor.newInstance(packet, gameProfile, 1, WorldSettings.EnumGamemode.NOT_SET, null);
 
-        if (makeCd) {
-            ALREADY_SPEAKING.add(player);
+		players.add(data);
+		field.set(packet, players);
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    ALREADY_SPEAKING.remove(player);
-                }
-            }.runTaskLater(MortarLibrary.getLibrary().getPlugin(), 20);
-        }
-    }
-    
-    
-    
-    public void security(Player player, String message, boolean makeCd) {
-        NPCVoiceType voice = getMeta().getVoiceType();
+		send(packet, player);
+	}
 
-        player.playSound(player.getLocation(), Sound.VILLAGER_YES, 10, voice.getPitch());
-        player.sendMessage(MortarUtils.color("&c[SECURITY] " + getMeta().getDisplayName() + ": &f" + message));
+	public void look(Player player) {
+		Location loc = location.setDirection(player.getLocation().subtract(location).toVector());
 
-        if (makeCd) {
-            ALREADY_SPEAKING.add(player);
+		float yaw = loc.getYaw();
+		float pitch = loc.getPitch();
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    ALREADY_SPEAKING.remove(player);
-                }
-            }.runTaskLater(MortarLibrary.getLibrary().getPlugin(), 20);
-        }
-    }
+		PacketPlayOutEntity.PacketPlayOutEntityLook packet = new PacketPlayOutEntity.PacketPlayOutEntityLook(entityId, getFixedRotation(yaw), getFixedRotation(pitch), true);
+		PacketPlayOutEntityHeadRotation headPacket = new PacketPlayOutEntityHeadRotation();
 
-    private int getFixedLocation(double position) {
-        return MathHelper.floor(position * 32D);
-    }
+		set(headPacket, "a", entityId);
+		set(headPacket, "b", getFixedRotation(yaw));
 
-    private byte getFixedRotation(float rotation) {
-        return (byte) Math.round(rotation * 256F / 360F);
-    }
+		send(packet, player);
+		send(headPacket, player);
+	}
+
+	public void onInteract(NPCInteractionEvent event) {}
+
+	public void speak(Player player, List<String> messages) {
+		if (ALREADY_SPEAKING.contains(player)) {
+			return;
+		}
+
+		int total = 0;
+
+		for (int i = 0; i < messages.size(); i++) {
+			String message = messages.get(i);
+
+			total += 1;
+
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					speak(player, message, false);
+				}
+			} .runTaskLater(MortarLibrary.getLibrary().getPlugin(), i * 30L);
+		}
+
+		ALREADY_SPEAKING.add(player);
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				ALREADY_SPEAKING.remove(player);
+			}
+		} .runTaskLater(MortarLibrary.getLibrary().getPlugin(), total * 35L);
+	}
+
+	public void speak(Player player, String message) {
+		speak(player, message, true);
+	}
+
+	public void speak(Player player, String message, boolean makeCd) {
+		NPCVoiceType voice = getMeta().getVoiceType();
+
+		player.playSound(player.getLocation(), Sound.VILLAGER_YES, 10, voice.getPitch());
+		player.sendMessage(MortarUtils.color("&e[NPC] " + getMeta().getDisplayName() + ": &f" + message));
+
+		if (makeCd) {
+			ALREADY_SPEAKING.add(player);
+
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					ALREADY_SPEAKING.remove(player);
+				}
+			} .runTaskLater(MortarLibrary.getLibrary().getPlugin(), 20);
+		}
+	}
+
+
+
+	public void security(Player player, String message, boolean makeCd) {
+		NPCVoiceType voice = getMeta().getVoiceType();
+
+		player.playSound(player.getLocation(), Sound.VILLAGER_YES, 10, voice.getPitch());
+		player.sendMessage(MortarUtils.color("&c[SECURITY] " + getMeta().getDisplayName() + ": &f" + message));
+
+		if (makeCd) {
+			ALREADY_SPEAKING.add(player);
+
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					ALREADY_SPEAKING.remove(player);
+				}
+			} .runTaskLater(MortarLibrary.getLibrary().getPlugin(), 20);
+		}
+	}
+
+	private int getFixedLocation(double position) {
+		return MathHelper.floor(position * 32D);
+	}
+
+	private byte getFixedRotation(float rotation) {
+		return (byte) Math.round(rotation * 256F / 360F);
+	}
+
+	//@Getter
+//    private NPCMeta meta;
+//    private int entityId;
+//    @Getter
+//    private Location location;
+//    private GameProfile gameProfile;
+//    private String texture;
+//    private String signature;
+
+	public NPCMeta getMeta() {
+		return meta;
+	}
+
+	public int getEntityId() {
+		return entityId;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public GameProfile getGameProfile() {
+		return gameProfile;
+	}
+
+	public String getTexture() {
+		return texture;
+	}
+
+	public String getSignature() {
+		return signature;
+	}
+
+	public void unload() {
+		for (Player player : new ArrayList<>(ALREADY_SPAWNED)) {
+			despawn(player);
+		}
+
+		for (UUID uuid : HOLOGRAMS.keySet()) {
+			HashMap<Integer, Hologram> hologramMap = HOLOGRAMS.get(uuid);
+			if (hologramMap != null && hologramMap.containsKey(entityId)) {
+				hologramMap.get(entityId).hide(Bukkit.getPlayer(uuid));
+				hologramMap.remove(entityId);
+			}
+		}
+
+		ALREADY_SPAWNED.clear();
+		ALREADY_DESPAWNED.clear();
+		ALREADY_SPEAKING.clear();
+
+		SHOW_PACKETS.clear();
+		HIDE_PACKETS.clear();
+		META_PACKETS.clear();
+
+		spawnPacket = null;
+	}
+
 }

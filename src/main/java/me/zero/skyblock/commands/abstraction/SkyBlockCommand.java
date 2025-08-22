@@ -17,7 +17,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -36,8 +40,19 @@ public abstract class SkyBlockCommand implements CommandExecutor {
         Objects.requireNonNull(commandParameters, "Missing command parameters annotation");
         this.skyBlockCommandImpl = new SkyBlockCommandImpl(this);
     }
+    
+    public CommandParameters getCommandParameters() {
+        return commandParameters;
+    }
 
+    public SkyBlockCommandImpl getSkyBlockCommandImpl() {
+        return skyBlockCommandImpl;
+    }
 
+    public String getName() {
+        return name;
+    }
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
@@ -83,6 +98,7 @@ public abstract class SkyBlockCommand implements CommandExecutor {
 
     public void register() {
         ((CraftServer) Bukkit.getServer()).getCommandMap().register(SkyblockGame.getInstance().getName(), skyBlockCommandImpl);
+        appendCommandHelpLine();
     }
 
     public static class SkyBlockCommandImpl extends BukkitCommand {
@@ -153,5 +169,36 @@ public abstract class SkyBlockCommand implements CommandExecutor {
                 }
             }
         }.runTaskAsynchronously((Plugin)SkyblockGame.getPlugin(SkyblockGame.class));
+    }
+    
+    private void appendCommandHelpLine() {
+        try {
+            File file = new File(SkyblockGame.getInstance().getDataFolder(), "commands.txt");
+
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+
+            String commandName = "/" + name;
+            String aliasPart = String.join(", ", Arrays.asList(commandParameters.aliases()));
+            if (!aliasPart.isEmpty()) {
+                commandName += " (" + aliasPart + ")";
+            }
+            String line = commandName + " - " + commandParameters.rank().toString() + ": " + commandParameters.description();
+
+            List<String> existing = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+            if (existing.contains(line)) return;
+
+            Files.write(
+                file.toPath(),
+                Collections.singletonList(line),
+                StandardCharsets.UTF_8,
+                StandardOpenOption.APPEND
+            );
+
+        } catch (IOException e) {
+            System.err.println("Failed to write command help");
+        }
     }
 }

@@ -9,6 +9,7 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,27 +69,27 @@ public class User
         load();
     }
 
-    public void load()
-    {
+    public void load() {
+    this.uuid = UUID.fromString(config.getString("uuid"));
+    this.coins = config.getLong("coins");
+    this.bits = config.getLong("bits");
+    this.bankCoins = config.getLong("bankCoins");
+    this.rank = PlayerRank.valueOf(this.config.getString("rank"));
+    this.skyblocklevel = config.getInt("skyblocklevel");
+    this.skyblockxp = config.getInt("skyblockxp");
+    this.giftedranks = config.getInt("giftedranks");
 
-        this.uuid = UUID.fromString(config.getString("uuid"));
-        this.coins = config.getLong("coins");
-        this.bits = config.getLong("bits");
-        this.bankCoins = config.getLong("bankCoins");
-        this.rank = PlayerRank.valueOf(this.config.getString("rank"));
-        this.skyblocklevel = config.getInt("skyblocklevel");
-        this.skyblockxp = config.getInt("skyblockxp");
-        this.giftedranks = config.getInt("giftedranks");
-        
-        if (this.config.contains("booleanStates")) {
-    Map<String, Boolean> savedBooleans = (Map<String, Boolean>) this.config.get("booleanStates");
-    if (savedBooleans != null) {
-        savedBooleans.forEach(booleanHandler::setBoolean);
+    if (this.config.contains("booleanStates")) {
+        ConfigurationSection section = this.config.getConfigurationSection("booleanStates");
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                boolean value = section.getBoolean(key);
+                booleanHandler.setBoolean(key, value);
+            }
+        }
     }
 }
 
-
-    }
 
     public void save()
     {

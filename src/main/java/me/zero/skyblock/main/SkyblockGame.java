@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 
 import lombok.Getter;
 import me.zero.skyblock.user.Config;
+import me.zero.skyblock.util.HologramUtil;
 import me.zero.skyblock.util.SkyBlockLogger;
 
 public class SkyblockGame extends JavaPlugin {
@@ -35,6 +36,8 @@ public class SkyblockGame extends JavaPlugin {
         SkyBlockLogger.sendMessage("&cSkyblockGame Core plugin has been disabled!");
         SkyBlockLogger.sendMessage("&cAuthor: Zero2Sixty2");
         SkyBlockLogger.sendMessage("&c&m-------------------------------------");
+        
+        HologramUtil.removeHolograms();
         
         new Loader(this).deload();
     }

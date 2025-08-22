@@ -46,7 +46,7 @@ public class Dante extends MortarNPC {
             }
             @Override
             public float getYaw() {
-                return -89.8F;
+                return -88.8F;
             }
             @Override
             public float getPitch() {

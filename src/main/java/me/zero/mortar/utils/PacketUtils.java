@@ -1,21 +1,3 @@
-/*
- * Copyright (C) 2023 by Ruby Game Studios
- * Mortar is apart of Skyblock, which is licensed under the Creative Commons Non-Commercial 4.0 International License.
- *
- * You may not use this software for commercial use, however you are free
- * to modify, copy, redistribute, or build upon our codebase. You must give
- * appropriate credit, provide a link to the license, and indicate
- * if changes were made.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, visit https://creativecommons.org/licenses/by-nc/4.0/legalcode
- */
 package me.zero.mortar.utils;
 
 import io.netty.channel.Channel;
@@ -42,75 +24,100 @@ import java.util.List;
 import java.util.Optional;
 
 public class PacketUtils {
-    //Packet Reader
-    private static List<Player> INJECTED = new ArrayList<>();
-    private static List<Channel> CHANNELS = new ArrayList<>();
+	//Packet Reader
+	private static List<Player> INJECTED = new ArrayList<>();
+	private static List<Channel> CHANNELS = new ArrayList<>();
 
-    public static void inject(Player player) {
-        if (INJECTED.contains(player)) {
-            throw new UnsupportedOperationException("Player " + player.getName() + " has already been injected!");
-        }
+	public static void inject(Player player) {
+		if (INJECTED.contains(player)) {
+			return; // Already injected, don't inject again
+		}
 
-        CraftPlayer craftPlayer = (CraftPlayer) player;
+		CraftPlayer craftPlayer = (CraftPlayer) player;
+		Channel channel = (craftPlayer.getHandle()).playerConnection.networkManager.channel;
 
-        Channel channel = (craftPlayer.getHandle()).playerConnection.networkManager.channel;
+		if (channel.pipeline().get("PacketInjector") != null) {
+			INJECTED.add(player);
+			return; // Already injected into pipeline
+		}
 
-        CHANNELS.add(channel);
-        channel.pipeline().addAfter("decoder", "PacketInjector",
-                new MessageToMessageDecoder<Packet<?>>() {
-                    @Override
-                    protected void decode(ChannelHandlerContext context, Packet<?> packet, List<Object> packets) throws Exception {
-                        packets.add(packet);
-                        read(player, packet);
-                    }
-                });
+		CHANNELS.add(channel);
+		channel.pipeline().addAfter("decoder", "PacketInjector",
+		new MessageToMessageDecoder<Packet<?>>() {
+			@Override
+			protected void decode(ChannelHandlerContext context, Packet<?> packet, List<Object> packets) throws Exception {
+				packets.add(packet);
+				read(player, packet);
+			}
+		});
 
-        INJECTED.add(player);
-    }
-
-    private static void read(Player player, Packet<?> packet) {
-        if (packet.getClass().getSimpleName().equalsIgnoreCase("PacketPlayInUseEntity")) {
-            int id = (Integer) get(packet, "a") - 5000;
-            NPCRegistry registry = MortarLibrary.getLibrary().getNpcRegistry();
+		INJECTED.add(player);
+	}
 
 
-            Optional<MortarNPC> npcOptional = registry.getByID(id);
+	private static void read(Player player, Packet<?> packet) {
+		if (packet.getClass().getSimpleName().equalsIgnoreCase("PacketPlayInUseEntity")) {
+			int entityId = (Integer) get(packet, "a"); // <-- DO NOT subtract 5000 here anymore!
 
-            if (!npcOptional.isPresent()) return;
+			NPCRegistry registry = MortarLibrary.getLibrary().getNpcRegistry();
+			Optional<MortarNPC> npcOptional = registry.getByID(entityId);
 
-            MortarNPC NPC = npcOptional.get();
-            if (get(packet, "action").toString().equalsIgnoreCase("ATTACK") || get(packet, "action").toString().equalsIgnoreCase("INTERACT")) {
-                if (player.isSneaking()) {
-                    NPC.onInteract(new NPCInteractionEvent(NPC, NPCActionType.SHIFT_CLICK_NPC, id, player));
-                } else {
-                    NPC.onInteract(new NPCInteractionEvent(NPC, NPCActionType.CLICK_NPC, id, player));
-                }
-            }
-        }
-    }
+			if (!npcOptional.isPresent()) return;
 
-    //Utility Methods
-    @SneakyThrows
-    public static void set(Object obj, String name, Object value) {
-        Field field = obj.getClass().getDeclaredField(name);
+			MortarNPC NPC = npcOptional.get();
+			if (get(packet, "action").toString().equalsIgnoreCase("ATTACK") || get(packet, "action").toString().equalsIgnoreCase("INTERACT")) {
+				if (player.isSneaking()) {
+					NPC.onInteract(new NPCInteractionEvent(NPC, NPCActionType.SHIFT_CLICK_NPC, entityId, player));
+				} else {
+					NPC.onInteract(new NPCInteractionEvent(NPC, NPCActionType.CLICK_NPC, entityId, player));
+				}
+			}
+		}
+	}
 
-        field.setAccessible(true);
-        field.set(obj, value);
-    }
 
-    @SneakyThrows
-    public static Object get(Object obj, String name) {
-        Field field = obj.getClass().getDeclaredField(name);
+	//Utility Methods
+	@SneakyThrows
+	public static void set(Object obj, String name, Object value) {
+		Field field = obj.getClass().getDeclaredField(name);
 
-        field.setAccessible(true);
-        return field.get(obj);
-    }
+		field.setAccessible(true);
+		field.set(obj, value);
+	}
 
-    public static void send(Packet<?> packet, Player player) {
-        (((CraftPlayer) player).getHandle()).playerConnection.sendPacket(packet);
-    }
+	@SneakyThrows
+	public static Object get(Object obj, String name) {
+		Field field = obj.getClass().getDeclaredField(name);
 
-    public static void send(Packet<?> packet) {
-        Bukkit.getOnlinePlayers().forEach(player -> send(packet, player));
-    }
+		field.setAccessible(true);
+		return field.get(obj);
+	}
+
+	public static void send(Packet<?> packet, Player player) {
+		(((CraftPlayer) player).getHandle()).playerConnection.sendPacket(packet);
+	}
+
+	public static void send(Packet<?> packet) {
+		Bukkit.getOnlinePlayers().forEach(player -> send(packet, player));
+	}
+
+	public static boolean isInjected(Player player) {
+		return INJECTED.contains(player);
+	}
+
+	public static void uninject(Player player) {
+		if (!isInjected(player)) return;
+
+		CraftPlayer craftPlayer = (CraftPlayer) player;
+		Channel channel = (craftPlayer.getHandle()).playerConnection.networkManager.channel;
+
+		if (channel.pipeline().get("PacketInjector") != null) {
+			channel.pipeline().remove("PacketInjector");
+		}
+
+		INJECTED.remove(player);
+		CHANNELS.remove(channel);
+	}
+
+
 }

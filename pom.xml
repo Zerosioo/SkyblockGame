@@ -4,7 +4,7 @@
 
     <groupId>me.zero</groupId>
     <artifactId>SkyblockGame</artifactId>
-    <version>2.0-LIME</version>
+    <version>V2</version>
     <packaging>jar</packaging>
 
     <name>SkyblockGame</name>
@@ -139,9 +139,44 @@
                     <archive>
                         <manifest>
                             <!-- Add your main class if needed (not required for Spigot plugins) -->
-                            <mainClass></mainClass>
+                            <mainClass>me.zero.skyblock.main.SkyblockGame</mainClass>
                         </manifest>
                     </archive>
+                	<archive>
+                		<manifest>
+                			<mainClass>
+                				
+                			</mainClass>
+                		</manifest>
+                	</archive>
+                	<archive>
+                		<manifest>
+                			<mainClass>
+                				
+                			</mainClass>
+                		</manifest>
+                	</archive>
+                	<archive>
+                		<manifest>
+                			<mainClass>
+                				
+                			</mainClass>
+                		</manifest>
+                	</archive>
+                	<archive>
+                		<manifest>
+                			<mainClass>
+                				SkyblockGame
+                			</mainClass>
+                		</manifest>
+                	</archive>
+                	<archive>
+                		<manifest>
+                			<mainClass>
+                				
+                			</mainClass>
+                		</manifest>
+                	</archive>
                 </configuration>
             </plugin>
         </plugins>
